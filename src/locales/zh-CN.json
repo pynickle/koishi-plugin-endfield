@@ -1,7 +1,7 @@
 {
   "endfield": {
     "networkError": "网络错误，请检查 Endfield API 是否可访问",
-    "notBoundError": "您尚未绑定 Endfield 账号，请先使用 endfield.sign 指令绑定"
+    "notBoundError": "您尚未绑定 Endfield 账号，请先使用 endfield.auth 指令绑定"
   },
   "commands": {
     "endfield.auth": {

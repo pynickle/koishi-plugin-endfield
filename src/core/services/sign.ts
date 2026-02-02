@@ -11,10 +11,10 @@ interface AutoSignStats {
   total: number;
   success: number;
   failed: number;
-  failedUsers: Array<{ userId: number; message: string }>;
+  failedUsers: Array<{ userId: string; message: string }>;
 }
 
-export async function signUser(ctx: Context, userId: number, cfg: Config): Promise<SignResult> {
+export async function signUser(ctx: Context, userId: string, cfg: Config): Promise<SignResult> {
   try {
     const bindings = await ctx.database.get('endfield_bindings', {
       user_id: userId,

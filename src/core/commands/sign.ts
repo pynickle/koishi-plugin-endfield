@@ -4,7 +4,7 @@ import { Context, Session } from 'koishi';
 
 export async function endfieldSign(ctx: Context, session: Session, cfg: Config) {
   try {
-    const result = await signUser(ctx, session.id, cfg);
+    const result = await signUser(ctx, session.userId, cfg);
 
     if (!result.success) {
       if (result.message === '未绑定 Endfield 账号') {

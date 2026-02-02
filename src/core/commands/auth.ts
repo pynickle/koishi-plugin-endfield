@@ -71,7 +71,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
               try {
                 await ctx.database.upsert('endfield_bindings', [
                   {
-                    user_id: session.id,
+                    user_id: session.userId,
                     framework_token: framework_token,
                     user_info: user_info,
                     binding_info: binding_info,

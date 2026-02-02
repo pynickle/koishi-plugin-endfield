@@ -17,7 +17,7 @@ declare module 'koishi' {
   interface Tables {
     endfield_bindings: {
       id: number;
-      user_id: number;
+      user_id: string;
       framework_token: string;
       user_info: {
         nickname: string;
@@ -40,7 +40,7 @@ export function apply(ctx: Context, cfg: Config) {
     'endfield_bindings',
     {
       id: 'unsigned',
-      user_id: 'unsigned',
+      user_id: 'string',
       framework_token: 'string',
       user_info: 'json',
       binding_info: 'json',
