@@ -1,3 +1,9 @@
+## [1.2.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.2.1...v1.2.2) (2026-02-02)
+
+### 🚀 Improvements
+
+* drop the old database v2 ([80648b3](https://github.com/pynickle/koishi-plugin-endfield/commit/80648b3f8e1ec73b6a6df9baa65b0aec9cc85c01))
+
 ## [1.2.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.2.0...v1.2.1) (2026-02-02)
 
 ### 🐛 Bug Fixes
