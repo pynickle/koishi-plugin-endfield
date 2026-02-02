@@ -1,0 +1,28 @@
+{
+  "endfield": {
+    "networkError": "网络错误，请检查 Endfield API 是否可访问",
+    "notBoundError": "您尚未绑定 Endfield 账号，请先使用 endfield.sign 指令绑定"
+  },
+  "commands": {
+    "endfield.auth": {
+      "description": "绑定 Endfield 账号",
+      "messages": {
+        "success": "绑定成功！",
+        "authRequestError": "创建授权请求失败",
+        "authTimeoutError": "授权超时，请重新尝试",
+        "authRejectedError": "授权被拒绝",
+        "authExpiredError": "授权已过期",
+        "authUrl": "请访问以下链接进行授权：\n{url}\n\n授权有效期至：{expiresAt}",
+        "authSuccess": "授权成功！\n用户名：{userNickname}\n角色名：{roleNickname} (UID: {roleId})"
+      }
+    },
+    "endfield.sign": {
+      "description": "终末地签到",
+      "messages": {
+        "signError": "签到失败：{message}",
+        "alreadySigned": "今日已签到",
+        "signSuccess": "签到成功！\n获得奖励：{awards}"
+      }
+    }
+  }
+}

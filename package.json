@@ -1,0 +1,50 @@
+{
+  "name": "koishi-plugin-endfield",
+  "description": "Endfield Plugin for Koishi",
+  "version": "1.0.1",
+  "main": "lib/index.cjs",
+  "typings": "lib/index.d.ts",
+  "type": "module",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pynickle/koishi-plugin-endfield.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "lint": "npx oxlint ./src",
+    "lint:fix": "npx oxlint ./src --fix",
+    "fmt": "npx oxfmt ./src",
+    "build": "node esbuild.config.js && tsc --emitDeclarationOnly",
+    "release": "semantic-release"
+  },
+  "koishi": {
+    "locales": [
+      "zh"
+    ]
+  },
+  "peerDependencies": {
+    "koishi": "^4.18.10"
+  },
+  "dependencies": {
+    "@pynickle/koishi-plugin-adapter-onebot": "^1.0.0",
+    "axios": "^1.13.4"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/npm": "^13.1.3",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "@types/node": "^24.10.9",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
+    "esbuild": "^0.27.2",
+    "oxfmt": "^0.27.0",
+    "oxlint": "^1.43.0",
+    "semantic-release": "^25.0.3",
+    "typescript": "^5.9.3"
+  }
+}

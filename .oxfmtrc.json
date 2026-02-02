@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "singleQuote": true,
+  "ignorePatterns": ["*.json"],
+  "experimentalSortImports": {
+    "groups": [
+      [
+        "^(?:@[^/].*|[A-Za-z].*)$"
+      ],
+      [
+        "^@/.*$"
+      ],
+      [
+        "^[./].*$"
+      ]
+    ],
+    "ignoreCase": true,
+    "newlinesBetween": true,
+    "sortSideEffects": false,
+    "partitionByComment": false,
+    "partitionByNewline": false,
+    "internalPattern": [
+      "^@/"
+    ],
+    "order": "asc"
+  }
+}
