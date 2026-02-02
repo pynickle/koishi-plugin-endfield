@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.2...v1.1.3) (2026-02-02)
+
+### 🚀 Improvements
+
+* improve auth for not onebot ([e655003](https://github.com/pynickle/koishi-plugin-endfield/commit/e655003143b383efef874682d2ad7fb64180257a))
+* make auto sign text chinese ([eeab33e](https://github.com/pynickle/koishi-plugin-endfield/commit/eeab33e5a67fa6b7bbd568dd7b8cb96f6d863212))
+
 ## [1.1.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.1...v1.1.2) (2026-02-02)
 
 ### 🐛 Bug Fixes
