@@ -1,9 +1,10 @@
 import { Config } from './config/config';
 import { endfieldAuth } from './core/commands/auth';
+import { endfieldCard } from './core/commands/card';
 import { endfieldSign } from './core/commands/sign';
-import { setupAutoSign } from './core/services/cron';
 import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
+import { setupAutoSign } from './core/services/cron';
 import zhCN from './locales/zh-CN.json';
 import { Context } from 'koishi';
 
@@ -15,21 +16,6 @@ export * from './config/config';
 
 declare module 'koishi' {
   interface Tables {
-    endfield_bindings: {
-      id: number;
-      user_id: string;
-      framework_token: string;
-      user_info: {
-        nickname: string;
-        avatar: string;
-      };
-      binding_info: {
-        role_id: string;
-        nickname: string;
-        level: number;
-      };
-      expires_at: Date;
-    };
     endfield_bindings_v2: {
       id: number;
       user_id: string;
@@ -50,8 +36,6 @@ declare module 'koishi' {
 
 export function apply(ctx: Context, cfg: Config) {
   ctx.i18n.define('zh-CN', zhCN);
-
-  ctx.database.drop('endfield_bindings');
 
   ctx.database.extend(
     'endfield_bindings_v2',
