@@ -1,6 +1,5 @@
 import { Config } from './config/config';
 import { endfieldAuth } from './core/commands/auth';
-import { endfieldCard } from './core/commands/card';
 import { endfieldSign } from './core/commands/sign';
 import { setupAutoSign } from './core/services/cron';
 import '@pynickle/koishi-plugin-adapter-onebot';
