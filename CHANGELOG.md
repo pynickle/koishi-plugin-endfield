@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.2.0...v1.2.1) (2026-02-02)
+
+### 🐛 Bug Fixes
+
+* remove auto increment ([5f598f0](https://github.com/pynickle/koishi-plugin-endfield/commit/5f598f0c0c00ed7b70aa991b815e9b30acfac887))
+
 ## [1.2.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.5...v1.2.0) (2026-02-02)
 
 ### ✨ Features
