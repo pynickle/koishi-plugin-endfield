@@ -44,7 +44,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
 
     let pollingInterval;
     let pollingAttempts = 0;
-    const maxAttempts = 30;
+    const maxAttempts = 75;
 
     return new Promise<string>((resolve) => {
       pollingInterval = setInterval(async () => {
@@ -75,7 +75,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
               clearInterval(pollingInterval);
 
               try {
-                await ctx.database.upsert('endfield_bindings', [
+                await ctx.database.upsert('endfield_bindings_v2', [
                   {
                     user_id: session.userId,
                     framework_token: framework_token,

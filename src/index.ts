@@ -51,22 +51,7 @@ declare module 'koishi' {
 export function apply(ctx: Context, cfg: Config) {
   ctx.i18n.define('zh-CN', zhCN);
 
-  ctx.database.extend(
-    'endfield_bindings',
-    {
-      id: 'unsigned',
-      user_id: 'string',
-      framework_token: 'string',
-      user_info: 'json',
-      binding_info: 'json',
-      expires_at: 'timestamp',
-    },
-    {
-      primary: 'id',
-      unique: ['user_id'],
-      autoInc: true,
-    }
-  );
+  ctx.database.drop('endfield_bindings');
 
   ctx.database.extend(
     'endfield_bindings_v2',
@@ -82,17 +67,6 @@ export function apply(ctx: Context, cfg: Config) {
       primary: 'id',
       unique: ['user_id'],
       autoInc: true,
-    }
-  );
-
-  ctx.model.migrate(
-    'endfield_bindings',
-    {
-      id: 'unsigned',
-    },
-    async (database) => {
-      const data = await database.get('endfield_bindings', {});
-      await database.upsert('endfield_bindings_v2', data);
     }
   );
 
