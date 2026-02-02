@@ -35,6 +35,7 @@ export async function signUser(ctx: Context, userId: string, cfg: Config): Promi
       method: 'POST',
       headers: {
         'X-Framework-Token': frameworkToken,
+        'X-API-KEY': cfg.apiKey,
       },
     });
 
