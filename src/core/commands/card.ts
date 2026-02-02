@@ -4,9 +4,7 @@ import { Context, Session } from 'koishi';
 
 export async function endfieldCard(ctx: Context, session: Session, cfg: Config, charName: string) {
   try {
-    const bindings = await ctx.database.get('endfield_bindings_v3', {
-      user_id: session.userId,
-    });
+    const bindings = await ctx.database.get('endfield_bindings_v3', session.userId);
 
     if (bindings.length === 0) {
       return session.text('endfield.notBoundError');

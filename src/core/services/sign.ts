@@ -16,9 +16,7 @@ interface AutoSignStats {
 
 export async function signUser(ctx: Context, userId: string, cfg: Config): Promise<SignResult> {
   try {
-    const bindings = await ctx.database.get('endfield_bindings_v3', {
-      user_id: userId,
-    });
+    const bindings = await ctx.database.get('endfield_bindings_v3', userId);
 
     if (bindings.length === 0) {
       return {
@@ -85,7 +83,7 @@ export async function autoSignAll(ctx: Context, cfg: Config): Promise<AutoSignSt
   };
 
   try {
-    const bindings = await ctx.database.get('endfield_bindings_v2', {});
+    const bindings = await ctx.database.get('endfield_bindings_v3', {});
     const userIds = Array.from(new Set(bindings.map((binding) => binding.user_id)));
 
     stats.total = userIds.length;
