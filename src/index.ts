@@ -16,21 +16,6 @@ export * from './config/config';
 
 declare module 'koishi' {
   interface Tables {
-    endfield_bindings_v2: {
-      id: number;
-      user_id: string;
-      framework_token: string;
-      user_info: {
-        nickname: string;
-        avatar: string;
-      };
-      binding_info: {
-        role_id: string;
-        nickname: string;
-        level: number;
-      };
-      expires_at: Date;
-    };
     endfield_bindings_v3: {
       user_id: string;
       framework_token: string;
@@ -50,8 +35,6 @@ declare module 'koishi' {
 
 export function apply(ctx: Context, cfg: Config) {
   ctx.i18n.define('zh-CN', zhCN);
-
-  ctx.database.drop('endfield_bindings_v2');
 
   ctx.database.extend(
     'endfield_bindings_v3',
