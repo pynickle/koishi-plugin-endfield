@@ -1,8 +1,9 @@
 import { Config } from '../../config/config';
+import { renderCharacterCard } from '../render/char';
 import axios from 'axios';
 import { Context, Session } from 'koishi';
 
-export async function endfieldCard(ctx: Context, session: Session, cfg: Config, charName: string) {
+export async function endfieldChar(ctx: Context, session: Session, cfg: Config, charName: string) {
   try {
     const bindings = await ctx.database.get('endfield_bindings_v3', session.userId);
 
@@ -27,10 +28,6 @@ export async function endfieldCard(ctx: Context, session: Session, cfg: Config, 
       return session.text('commands.endfield.card.messages.noteError', {
         message: noteData.message,
       });
-    }
-
-    if (!noteData.data || !noteData.data.chars) {
-      return session.text('commands.endfield.card.messages.noteFormatError');
     }
 
     const targetChar = noteData.data.chars.find((char: any) => char.name === charName);
@@ -62,11 +59,7 @@ export async function endfieldCard(ctx: Context, session: Session, cfg: Config, 
       });
     }
 
-    if (!cardData.data) {
-      return session.text('commands.endfield.card.messages.cardFormatError');
-    }
-
-    return session.send(`<img src="${cardData.data.imageUrl}"/>`);
+    return renderCharacterCard(ctx, cardData.data);
   } catch (error) {
     ctx.logger.error('Endfield card error:', error);
     return session.text('endfield.networkError');

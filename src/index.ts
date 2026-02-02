@@ -1,6 +1,6 @@
 import { Config } from './config/config';
 import { endfieldAuth } from './core/commands/auth';
-import { endfieldCard } from './core/commands/card';
+import { endfieldChar } from './core/commands/char';
 import { endfieldSign } from './core/commands/sign';
 import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
@@ -53,8 +53,8 @@ export function apply(ctx: Context, cfg: Config) {
   ctx.command('endfield.auth').action(async ({ session }) => endfieldAuth(ctx, session, cfg));
   ctx.command('endfield.sign').action(async ({ session }) => endfieldSign(ctx, session, cfg));
   ctx
-    .command('endfield.card <charName>')
-    .action(async ({ session }, charName) => endfieldCard(ctx, session, cfg, charName));
+    .command('endfield.char <charName>')
+    .action(async ({ session }, charName) => endfieldChar(ctx, session, cfg, charName));
 
   // Setup auto sign task
   setupAutoSign(ctx, cfg);

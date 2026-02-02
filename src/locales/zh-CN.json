@@ -27,10 +27,8 @@
       "description": "获取干员详情卡片",
       "messages": {
         "noteError": "获取角色列表失败：{message}",
-        "noteFormatError": "获取角色列表失败：API 返回数据格式不正确",
         "charNotFound": "未找到角色 \"{charName}\"，请检查角色名称是否正确",
-        "cardError": "获取干员详情失败：{message}",
-        "cardFormatError": "获取干员详情卡片失败：API 返回数据格式不正确"
+        "cardError": "获取干员详情失败：{message}"
       }
     }
   }

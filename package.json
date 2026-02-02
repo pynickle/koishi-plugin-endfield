@@ -32,7 +32,8 @@
   "dependencies": {
     "@pynickle/koishi-plugin-adapter-onebot": "^1.0.0",
     "axios": "^1.13.4",
-    "koishi-plugin-cron": "^3.1.0"
+    "koishi-plugin-cron": "^3.1.0",
+    "koishi-plugin-puppeteer": "^3.9.0"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
