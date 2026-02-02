@@ -46,7 +46,6 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
 
         if (pollingAttempts > maxAttempts) {
           clearInterval(pollingInterval);
-          resolve(session.text('.authTimeoutError'));
           return;
         }
 

@@ -9,7 +9,6 @@
       "messages": {
         "success": "绑定成功！",
         "authRequestError": "创建授权请求失败",
-        "authTimeoutError": "授权超时，请重新尝试",
         "authRejectedError": "授权被拒绝",
         "authExpiredError": "授权已过期",
         "authUrl": "请访问以下链接进行授权：\n{url}\n\n授权有效期至：{expiresAt}",
