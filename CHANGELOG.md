@@ -1,3 +1,13 @@
+## [1.1.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.3...v1.1.4) (2026-02-02)
+
+### 🐛 Bug Fixes
+
+* fix build error ([3913805](https://github.com/pynickle/koishi-plugin-endfield/commit/3913805f840909c8c3f7d99c8a37649bcddb8f53))
+
+### 🚀 Improvements
+
+* make user id unique in endfield bindings ([23ec08a](https://github.com/pynickle/koishi-plugin-endfield/commit/23ec08aa978baf2d9487ea04d294cab1803e477f))
+
 ## [1.1.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.2...v1.1.3) (2026-02-02)
 
 ### 🚀 Improvements
