@@ -1,3 +1,9 @@
+## [1.1.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.0.0...v1.1.0) (2026-02-02)
+
+### ✨ Features
+
+* add auto sign ([830a7a4](https://github.com/pynickle/koishi-plugin-endfield/commit/830a7a494dd907c8c832ea417ca400a145ae9c61))
+
 ## 1.0.0 (2026-02-02)
 
 ### ✨ Features
