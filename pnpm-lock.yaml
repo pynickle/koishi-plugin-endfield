@@ -17,6 +17,9 @@ importers:
       koishi:
         specifier: ^4.18.10
         version: 4.18.10(@cordisjs/plugin-http@0.6.3(cordis@3.18.1))(cordis@3.18.1)
+      koishi-plugin-cron:
+        specifier: ^3.1.0
+        version: 3.1.0(koishi@4.18.10(@cordisjs/plugin-http@0.6.3(cordis@3.18.1))(cordis@3.18.1))
     devDependencies:
       '@semantic-release/changelog':
         specifier: ^6.0.3
@@ -842,6 +845,10 @@ packages:
   cosmokit@1.8.1:
     resolution: {integrity: sha512-PDBv4l90xZKrUsZ0vtoycgZpO/j4iFsqJXrAxsyBDsnQRI7ZMJXIjgDJsKNjd5L8jnVnnlrDCdhkFbTncgCVjQ==}
 
+  cron-parser@4.9.0:
+    resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
+    engines: {node: '>=12.0.0'}
+
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
@@ -1340,6 +1347,11 @@ packages:
     resolution: {integrity: sha512-zPPuIt+ku1iCpFBRwseMcPYQ1cJL8l60rSmKeOuGfOXyE6YnTBmf2aEFNL2HQGrD0cPcLO/t+v9RTgC+fwEh/g==}
     engines: {node: ^4.8.4 || ^6.10.1 || ^7.10.1 || >= 8.1.4}
 
+  koishi-plugin-cron@3.1.0:
+    resolution: {integrity: sha512-otBrjpLnYXyWRr2PxPEuwyyoQvIqP6HbCa1Ql/dIM69cPApPMtJdVFqUf9EGnyijZtbDzM4NBpZcghcvbkpl1g==}
+    peerDependencies:
+      koishi: ^4.15.6
+
   koishi@4.18.10:
     resolution: {integrity: sha512-rEbF2NuHDAsBJ0+5B12RsRk7QWM/1sZvMnlaSj2TqUP+558Z1+lVZO9HhsyxrEp+r+bheRNfpJDN8aO369/myg==}
     hasBin: true
@@ -1382,6 +1394,10 @@ packages:
   lru-cache@11.2.5:
     resolution: {integrity: sha512-vFrFJkWtJvJnD5hg+hJvVE8Lh/TcMzKnTgCWmtBipwI5yLX/iX+5UB2tfuyODF5E7k9xEzMdYgGqaSb1c0c5Yw==}
     engines: {node: 20 || >=22}
+
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
 
   make-asynchronous@1.0.1:
     resolution: {integrity: sha512-T9BPOmEOhp6SmV25SwLVcHK4E6JyG/coH3C6F1NjNXSziv/fd4GmsqMk8YR6qpPOswfaOCApSNkZv6fxoaYFcQ==}
@@ -3040,6 +3056,10 @@ snapshots:
 
   cosmokit@1.8.1: {}
 
+  cron-parser@4.9.0:
+    dependencies:
+      luxon: 3.7.2
+
   cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
@@ -3562,6 +3582,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  koishi-plugin-cron@3.1.0(koishi@4.18.10(@cordisjs/plugin-http@0.6.3(cordis@3.18.1))(cordis@3.18.1)):
+    dependencies:
+      cron-parser: 4.9.0
+      koishi: 4.18.10(@cordisjs/plugin-http@0.6.3(cordis@3.18.1))(cordis@3.18.1)
+
   koishi@4.18.10(@cordisjs/plugin-http@0.6.3(cordis@3.18.1))(cordis@3.18.1):
     dependencies:
       '@koishijs/core': 4.18.10
@@ -3611,6 +3636,8 @@ snapshots:
   lru-cache@10.4.3: {}
 
   lru-cache@11.2.5: {}
+
+  luxon@3.7.2: {}
 
   make-asynchronous@1.0.1:
     dependencies:

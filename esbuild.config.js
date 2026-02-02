@@ -10,6 +10,6 @@ await build({
         'koishi',
         '@pynickle/koishi-plugin-adapter-onebot',
         'axios',
-        'uuid'
+        'koishi-plugin-cron'
     ]
 })

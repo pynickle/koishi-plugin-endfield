@@ -1,13 +1,15 @@
 import { Config } from './config/config';
 import { endfieldAuth } from './core/commands/auth';
 import { endfieldSign } from './core/commands/sign';
+import { setupAutoSign } from './core/services/cron';
 import '@pynickle/koishi-plugin-adapter-onebot';
+import 'koishi-plugin-cron';
 import zhCN from './locales/zh-CN.json';
 import { Context } from 'koishi';
 
 export const name = 'endfield';
 
-export const inject = ['database', 'puppeteer'];
+export const inject = ['database', 'puppeteer', 'cron'];
 
 export * from './config/config';
 
@@ -52,4 +54,7 @@ export function apply(ctx: Context, cfg: Config) {
 
   ctx.command('endfield.auth').action(async ({ session }) => endfieldAuth(ctx, session, cfg));
   ctx.command('endfield.sign').action(async ({ session }) => endfieldSign(ctx, session, cfg));
+
+  // Setup auto sign task
+  setupAutoSign(ctx, cfg);
 }
