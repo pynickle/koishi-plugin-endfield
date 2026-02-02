@@ -16,7 +16,7 @@ interface AutoSignStats {
 
 export async function signUser(ctx: Context, userId: string, cfg: Config): Promise<SignResult> {
   try {
-    const bindings = await ctx.database.get('endfield_bindings_v2', {
+    const bindings = await ctx.database.get('endfield_bindings_v3', {
       user_id: userId,
     });
 

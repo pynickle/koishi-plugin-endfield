@@ -31,6 +31,20 @@ declare module 'koishi' {
       };
       expires_at: Date;
     };
+    endfield_bindings_v3: {
+      user_id: string;
+      framework_token: string;
+      user_info: {
+        nickname: string;
+        avatar: string;
+      };
+      binding_info: {
+        role_id: string;
+        nickname: string;
+        level: number;
+      };
+      expires_at: Date;
+    };
   }
 }
 
@@ -48,14 +62,49 @@ export function apply(ctx: Context, cfg: Config) {
       expires_at: 'timestamp',
     },
     {
-      primary: 'id',
+      primary: 'user_id',
       unique: ['user_id'],
       autoInc: true,
     }
   );
 
+  ctx.database.extend(
+    'endfield_bindings_v3',
+    {
+      user_id: 'string',
+      framework_token: 'string',
+      user_info: 'json',
+      binding_info: 'json',
+      expires_at: 'timestamp',
+    },
+    {
+      primary: 'user_id',
+      autoInc: true,
+    }
+  );
+
+  ctx.model.migrate(
+    'endfield_bindings_v2',
+    {
+      id: 'unsigned',
+    },
+    async (database) => {
+      const data = await database.get('endfield_bindings_v2', {}, [
+        'user_id',
+        'framework_token',
+        'user_info',
+        'binding_info',
+        'expires_at',
+      ]);
+      await database.upsert('endfield_bindings_v3', data);
+    }
+  );
+
   ctx.command('endfield.auth').action(async ({ session }) => endfieldAuth(ctx, session, cfg));
   ctx.command('endfield.sign').action(async ({ session }) => endfieldSign(ctx, session, cfg));
+  ctx
+    .command('endfield.card <charName>')
+    .action(async ({ session }, charName) => endfieldCard(ctx, session, cfg, charName));
 
   // Setup auto sign task
   setupAutoSign(ctx, cfg);

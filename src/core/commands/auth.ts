@@ -75,7 +75,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
               clearInterval(pollingInterval);
 
               try {
-                await ctx.database.upsert('endfield_bindings_v2', [
+                await ctx.database.upsert('endfield_bindings_v3', [
                   {
                     user_id: session.userId,
                     framework_token: framework_token,
