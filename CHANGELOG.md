@@ -1,3 +1,9 @@
+## [1.1.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.1...v1.1.2) (2026-02-02)
+
+### 🐛 Bug Fixes
+
+* add missing x-api-key for signing ([969cda5](https://github.com/pynickle/koishi-plugin-endfield/commit/969cda541c52f2767d5f5c661408619ee09a9b08))
+
 ## [1.1.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.0...v1.1.1) (2026-02-02)
 
 ### 🐛 Bug Fixes
