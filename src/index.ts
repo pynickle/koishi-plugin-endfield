@@ -63,8 +63,6 @@ export function apply(ctx: Context, cfg: Config) {
     },
     {
       primary: 'user_id',
-      unique: ['user_id'],
-      autoInc: true,
     }
   );
 
@@ -79,7 +77,6 @@ export function apply(ctx: Context, cfg: Config) {
     },
     {
       primary: 'user_id',
-      autoInc: true,
     }
   );
 
