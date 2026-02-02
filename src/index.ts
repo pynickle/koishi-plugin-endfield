@@ -1,5 +1,6 @@
 import { Config } from './config/config';
 import { endfieldAuth } from './core/commands/auth';
+import { endfieldCard } from './core/commands/card';
 import { endfieldSign } from './core/commands/sign';
 import { setupAutoSign } from './core/services/cron';
 import '@pynickle/koishi-plugin-adapter-onebot';
@@ -16,6 +17,21 @@ export * from './config/config';
 declare module 'koishi' {
   interface Tables {
     endfield_bindings: {
+      id: number;
+      user_id: string;
+      framework_token: string;
+      user_info: {
+        nickname: string;
+        avatar: string;
+      };
+      binding_info: {
+        role_id: string;
+        nickname: string;
+        level: number;
+      };
+      expires_at: Date;
+    };
+    endfield_bindings_v2: {
       id: number;
       user_id: string;
       framework_token: string;
@@ -48,7 +64,36 @@ export function apply(ctx: Context, cfg: Config) {
     },
     {
       primary: 'id',
+      unique: ['user_id'],
       autoInc: true,
+    }
+  );
+
+  ctx.database.extend(
+    'endfield_bindings_v2',
+    {
+      id: 'unsigned',
+      user_id: 'string',
+      framework_token: 'string',
+      user_info: 'json',
+      binding_info: 'json',
+      expires_at: 'timestamp',
+    },
+    {
+      primary: 'id',
+      unique: ['user_id'],
+      autoInc: true,
+    }
+  );
+
+  ctx.model.migrate(
+    'endfield_bindings',
+    {
+      id: 'unsigned',
+    },
+    async (database) => {
+      const data = await database.get('endfield_bindings', {});
+      await database.upsert('endfield_bindings_v2', data);
     }
   );
 
