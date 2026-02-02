@@ -32,9 +32,15 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
       url: fullAuthUrl,
       expiresAt: new Date(expires_at).toLocaleString(),
     });
-    const authUrlMsgId = await session.onebot.sendGroupMsg(session.channelId, [
-      createTextMsg(authText),
-    ]);
+
+    let authUrlMsgId: string | number;
+    if (session.onebot) {
+      authUrlMsgId = await session.onebot.sendGroupMsg(session.channelId, [
+        createTextMsg(authText),
+      ]);
+    } else {
+      await session.send(authText);
+    }
 
     let pollingInterval;
     let pollingAttempts = 0;
@@ -79,7 +85,9 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
                   },
                 ]);
 
-                await session.onebot.deleteMsg(authUrlMsgId);
+                if (session.onebot) {
+                  await session.onebot.deleteMsg(authUrlMsgId);
+                }
 
                 const successText = session.text('.authSuccess', {
                   userNickname: user_info.nickname,
