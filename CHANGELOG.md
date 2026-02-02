@@ -1,3 +1,9 @@
+## [1.1.5](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.4...v1.1.5) (2026-02-02)
+
+### 🚀 Improvements
+
+* make auth max attempts more ([130b2b4](https://github.com/pynickle/koishi-plugin-endfield/commit/130b2b465b6a791e98bf5e117bd9b33a42c02f57))
+
 ## [1.1.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.3...v1.1.4) (2026-02-02)
 
 ### 🐛 Bug Fixes
