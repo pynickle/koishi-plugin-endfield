@@ -8,15 +8,15 @@ export function setupAutoSign(ctx: Context, cfg: Config) {
     const stats = await autoSignAll(ctx, cfg);
 
     // Prepare stats message
-    let message = `Endfield auto sign stats:\n`;
-    message += `Total users: ${stats.total}\n`;
-    message += `Success: ${stats.success}\n`;
-    message += `Failed: ${stats.failed}\n`;
+    let message = `Endfield 自动签到统计：\n`;
+    message += `总用户数：${stats.total}\n`;
+    message += `成功：${stats.success}\n`;
+    message += `失败：${stats.failed}\n`;
 
     if (stats.failed > 0) {
-      message += `Failed users:\n`;
+      message += `失败用户：\n`;
       stats.failedUsers.forEach(({ userId, message: failMsg }) => {
-        message += `- User ID: ${userId}, Reason: ${failMsg}\n`;
+        message += `- 用户 ID：${userId}，原因：${failMsg}\n`;
       });
     }
 

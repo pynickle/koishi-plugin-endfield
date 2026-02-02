@@ -58,7 +58,7 @@ export async function signUser(ctx: Context, userId: string, cfg: Config): Promi
     const awards = signData.data.awardIds
       .map((award: any) => {
         const resourceInfo = signData.data.resourceInfoMap[award.id];
-        return `${resourceInfo.name} x${award.count}`;
+        return `${resourceInfo.name} x${resourceInfo.count}`;
       })
       .join('、');
 
@@ -71,7 +71,7 @@ export async function signUser(ctx: Context, userId: string, cfg: Config): Promi
     ctx.logger.error('Endfield sign error:', error);
     return {
       success: false,
-      message: '网络错误，请检查 Endfield API 是否可访问',
+      message: '网络错误',
     };
   }
 }
