@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.1.0...v1.1.1) (2026-02-02)
+
+### 🐛 Bug Fixes
+
+* fix wrong data for user id ([83dab98](https://github.com/pynickle/koishi-plugin-endfield/commit/83dab98310a44f57aaaf59f5ccdccbf0969f3007))
+
 ## [1.1.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.0.0...v1.1.0) (2026-02-02)
 
 ### ✨ Features
