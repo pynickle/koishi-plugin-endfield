@@ -133,7 +133,7 @@ export async function endfieldGacha(
                   return;
                 }
 
-                return await renderGachaRecord(ctx, recordsData.data, charPools);
+                resolve(await renderGachaRecord(ctx, recordsData.data, charPools));
               } else if (syncStatus.status === 'failed') {
                 clearInterval(pollingInterval);
 
