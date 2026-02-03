@@ -1,10 +1,12 @@
 import { Config } from './config/config';
 import { endfieldAuth } from './core/commands/auth';
 import { endfieldChar } from './core/commands/char';
+import { endfieldGacha } from './core/commands/gacha';
 import { endfieldSign } from './core/commands/sign';
 import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
-import { setupAutoSign } from './core/services/cron';
+import { fetchAndSaveCharPools } from './core/services/char-pools';
+import { autoSignAll } from './core/services/sign';
 import zhCN from './locales/zh-CN.json';
 import { Context } from 'koishi';
 
@@ -30,6 +32,23 @@ declare module 'koishi' {
       };
       expires_at: Date;
     };
+    endfield_char_pools: {
+      pool_id: string;
+      name: string;
+      chars: any[];
+      pool_start_at_ts: string;
+      pool_end_at_ts: string;
+      start_at_ts: string;
+      end_at_ts: string;
+      europe_pool_start_at_ts: string;
+      europe_pool_end_at_ts: string;
+      sort_id: number;
+      pool_type?: string;
+      star6_chars?: any[];
+      star5_chars?: any[];
+      star4_chars?: any[];
+      up_chars?: any[];
+    };
   }
 }
 
@@ -50,12 +69,43 @@ export function apply(ctx: Context, cfg: Config) {
     }
   );
 
+  ctx.database.extend(
+    'endfield_char_pools',
+    {
+      pool_id: 'string',
+      name: 'string',
+      chars: 'json',
+      pool_start_at_ts: 'string',
+      pool_end_at_ts: 'string',
+      start_at_ts: 'string',
+      end_at_ts: 'string',
+      sort_id: 'integer',
+    },
+    {
+      primary: 'pool_id',
+    }
+  );
+
   ctx.command('endfield.auth').action(async ({ session }) => endfieldAuth(ctx, session, cfg));
   ctx.command('endfield.sign').action(async ({ session }) => endfieldSign(ctx, session, cfg));
   ctx
     .command('endfield.char <charName>')
     .action(async ({ session }, charName) => endfieldChar(ctx, session, cfg, charName));
+  ctx
+    .command('endfield.gacha')
+    .option('noSync', '-n 不同步直接获取抽卡记录')
+    .action(async ({ session, options }) => endfieldGacha(ctx, session, cfg, options));
 
-  // Setup auto sign task
-  setupAutoSign(ctx, cfg);
+  // Setup auto sign task, run at 00:01 every day
+  ctx.cron('1 0 * * *', async () => {
+    await autoSignAll(ctx, cfg);
+  });
+
+  // Setup char pools fetch cron job, run at 12:00 every day
+  ctx.cron('0 12 * * *', async () => {
+    await fetchAndSaveCharPools(ctx, cfg);
+  });
+
+  // Fetch char pools on plugin start
+  fetchAndSaveCharPools(ctx, cfg);
 }

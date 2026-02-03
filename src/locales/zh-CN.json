@@ -30,6 +30,16 @@
         "charNotFound": "未找到角色 \"{charName}\"，请检查角色名称是否正确",
         "cardError": "获取干员详情失败：{message}"
       }
+    },
+    "endfield.gacha": {
+      "description": "获取抽卡记录",
+      "messages": {
+        "syncing": "正在同步抽卡记录，请稍候...",
+        "syncTaskError": "启动同步任务失败：{message}",
+        "syncTimeout": "同步超时，请稍后重试",
+        "recordsError": "获取抽卡记录失败：{message}",
+        "syncFailed": "同步抽卡记录失败：{message}"
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 import { Config } from '../../config/config';
+import axios from 'axios';
 import { Context } from 'koishi';
 
 interface SignResult {
@@ -29,15 +30,18 @@ export async function signUser(ctx: Context, userId: string, cfg: Config): Promi
     const frameworkToken = binding.framework_token;
 
     const signUrl = new URL('/api/endfield/attendance', cfg.apiBaseUrl);
-    const signResponse = await fetch(signUrl, {
-      method: 'POST',
-      headers: {
-        'X-Framework-Token': frameworkToken,
-        'X-API-KEY': cfg.apiKey,
-      },
-    });
+    const signResponse = await axios.post(
+      signUrl.toString(),
+      {},
+      {
+        headers: {
+          'X-Framework-Token': frameworkToken,
+          'X-API-KEY': cfg.apiKey,
+        },
+      }
+    );
 
-    const signData = await signResponse.json();
+    const signData = signResponse.data;
 
     if (signData.code !== 0) {
       return {
@@ -74,7 +78,7 @@ export async function signUser(ctx: Context, userId: string, cfg: Config): Promi
   }
 }
 
-export async function autoSignAll(ctx: Context, cfg: Config): Promise<AutoSignStats> {
+export async function autoSignAll(ctx: Context, cfg: Config): Promise<void> {
   const stats: AutoSignStats = {
     total: 0,
     success: 0,
@@ -99,9 +103,27 @@ export async function autoSignAll(ctx: Context, cfg: Config): Promise<AutoSignSt
         stats.failedUsers.push({ userId, message: result.message });
       }
     }
+
+    // Prepare stats message
+    let message = `Endfield 自动签到统计：\n`;
+    message += `总用户数：${stats.total}\n`;
+    message += `成功：${stats.success}\n`;
+    message += `失败：${stats.failed}\n`;
+
+    if (stats.failed > 0) {
+      message += `失败用户：\n`;
+      stats.failedUsers.forEach(({ userId, message: failMsg }) => {
+        message += `- 用户 ID：${userId}，原因：${failMsg}\n`;
+      });
+    }
+
+    // Send message to admin QQ
+    try {
+      await ctx.bots[0].sendPrivateMessage(cfg.adminQQ, message);
+    } catch (error) {
+      ctx.logger.error('Failed to send stats to admin:', error);
+    }
   } catch (error) {
     ctx.logger.error('Auto sign error:', error);
   }
-
-  return stats;
 }

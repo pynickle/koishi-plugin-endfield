@@ -15,14 +15,14 @@ export async function endfieldChar(ctx: Context, session: Session, cfg: Config, 
     const frameworkToken = binding.framework_token;
 
     const noteUrl = new URL('/api/endfield/note', cfg.apiBaseUrl);
-    const noteResponse = await fetch(noteUrl, {
+    const noteResponse = await axios.get(noteUrl.toString(), {
       headers: {
         'X-Framework-Token': frameworkToken,
         'X-API-KEY': cfg.apiKey,
       },
     });
 
-    const noteData = await noteResponse.json();
+    const noteData = noteResponse.data;
 
     if (noteData.code !== 0) {
       return session.text('commands.endfield.card.messages.noteError', {

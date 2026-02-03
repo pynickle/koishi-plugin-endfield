@@ -1,25 +1,28 @@
 import { Config } from '../../config/config';
 import { createTextMsg } from '../../utils/cqcode-utils';
+import axios from 'axios';
 import { Context, Session } from 'koishi';
 
 export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) {
   try {
     const createRequestUrl = new URL('/api/v1/authorization/requests', cfg.apiBaseUrl);
-    const createRequestResponse = await fetch(createRequestUrl, {
-      method: 'POST',
-      headers: {
-        'X-API-Key': cfg.apiKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    const createRequestResponse = await axios.post(
+      createRequestUrl.toString(),
+      {
         client_id: 'yuan-bot',
         client_name: 'Yuan Bot',
         client_type: 'bot',
         scopes: ['user_info', 'binding_info'],
-      }),
-    });
+      },
+      {
+        headers: {
+          'X-API-Key': cfg.apiKey,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-    const createRequestData = await createRequestResponse.json();
+    const createRequestData = createRequestResponse.data;
 
     if (createRequestData.code !== 0) {
       return session.text('.authRequestError');
@@ -60,13 +63,13 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
             `/api/v1/authorization/requests/${request_id}/status`,
             cfg.apiBaseUrl
           );
-          const statusResponse = await fetch(statusUrl, {
+          const statusResponse = await axios.get(statusUrl.toString(), {
             headers: {
               'X-API-Key': cfg.apiKey,
             },
           });
 
-          const statusData = await statusResponse.json();
+          const statusData = statusResponse.data;
 
           if (statusData.code === 0) {
             const { status, framework_token, user_info, binding_info } = statusData.data;
