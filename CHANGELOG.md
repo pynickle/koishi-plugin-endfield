@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.0...v1.4.1) (2026-02-03)
+
+### 🐛 Bug Fixes
+
+* fix wrong procession without -n ([e9217d0](https://github.com/pynickle/koishi-plugin-endfield/commit/e9217d037b705434b447f71887f240440e2daa9d))
+
 ## [1.4.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.3.0...v1.4.0) (2026-02-03)
 
 ### ✨ Features
