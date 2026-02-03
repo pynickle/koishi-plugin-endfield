@@ -37,9 +37,7 @@ export async function endfieldGacha(
 
     const charPools = await ctx.database.get('endfield_char_pools', {});
 
-    // 检查是否需要同步
     if (!options.noSync) {
-      // 发送正在同步的消息
       let syncMsgId: string | number;
       const syncText = session.text('.syncing');
 
@@ -51,7 +49,6 @@ export async function endfieldGacha(
         await session.send(syncText);
       }
 
-      // 2. 启动同步任务
       const fetchUrl = new URL('/api/endfield/gacha/fetch', cfg.apiBaseUrl);
       const fetchResponse = await axios.post(
         fetchUrl.toString(),
@@ -72,11 +69,10 @@ export async function endfieldGacha(
           await session.onebot.deleteMsg(syncMsgId);
         }
         return session.text('.syncTaskError', {
-          message: fetchData.message || '未知错误',
+          message: fetchData.message,
         });
       }
 
-      // 3. 轮询同步状态
       let pollingInterval: string | number | NodeJS.Timeout;
       let pollingAttempts = 0;
       const maxAttempts = 300; // 最多轮询 5 分钟
@@ -87,7 +83,7 @@ export async function endfieldGacha(
 
           if (pollingAttempts > maxAttempts) {
             clearInterval(pollingInterval);
-            // 撤回消息
+
             if (session.onebot) {
               await session.onebot.deleteMsg(syncMsgId);
             }
@@ -114,12 +110,10 @@ export async function endfieldGacha(
 
                 ctx.logger.info('Gacha sync completed:', syncStatus.status);
 
-                // 撤回消息
                 if (session.onebot) {
                   await session.onebot.deleteMsg(syncMsgId);
                 }
 
-                // 4. 获取抽卡记录
                 const recordsUrl = new URL('/api/endfield/gacha/records', cfg.apiBaseUrl);
                 const recordsResponse = await axios.get(recordsUrl.toString(), {
                   headers: {
@@ -133,26 +127,23 @@ export async function endfieldGacha(
                 if (recordsData.code !== 0) {
                   resolve(
                     session.text('.recordsError', {
-                      message: recordsData.message || '未知错误',
+                      message: recordsData.message,
                     })
                   );
                   return;
                 }
 
-                const html = await renderGachaRecord(ctx, recordsData.data, charPools);
-
-                resolve(`<img src="${html}"/>`);
+                return await renderGachaRecord(ctx, recordsData.data, charPools);
               } else if (syncStatus.status === 'failed') {
                 clearInterval(pollingInterval);
 
-                // 撤回消息
                 if (session.onebot) {
                   await session.onebot.deleteMsg(syncMsgId);
                 }
 
                 resolve(
                   session.text('.syncFailed', {
-                    message: syncStatus.error || '未知错误',
+                    message: syncStatus.error,
                   })
                 );
               }
@@ -160,10 +151,9 @@ export async function endfieldGacha(
           } catch (error) {
             ctx.logger.error('Polling gacha sync status error:', error);
           }
-        }, 2000); // 每 2 秒轮询一次
+        }, 2000);
       });
     } else {
-      // 直接获取抽卡记录，不同步
       const recordsUrl = new URL('/api/endfield/gacha/records', cfg.apiBaseUrl);
       const recordsResponse = await axios.get(recordsUrl.toString(), {
         headers: {
@@ -176,7 +166,7 @@ export async function endfieldGacha(
 
       if (recordsData.code !== 0) {
         return session.text('.recordsError', {
-          message: recordsData.message || '未知错误',
+          message: recordsData.message,
         });
       }
 
