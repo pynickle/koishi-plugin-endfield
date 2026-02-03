@@ -1,3 +1,9 @@
+## [1.4.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.1...v1.4.2) (2026-02-03)
+
+### 🐛 Bug Fixes
+
+* fix image sending not working ([60dfba4](https://github.com/pynickle/koishi-plugin-endfield/commit/60dfba458be27d5bdd51b051c8ac03d4afd7bd05))
+
 ## [1.4.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.0...v1.4.1) (2026-02-03)
 
 ### 🐛 Bug Fixes
