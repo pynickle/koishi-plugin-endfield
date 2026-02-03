@@ -484,7 +484,7 @@ export async function generateGachaRecord(
         ? `
     <div class="divider" data-label="限定卡池"></div>
     <div class="columns is-multiline m-1">
-      ${specialPools.map(renderPoolCard).join('')}
+      ${specialPools.map(p => renderPoolCard(p)).join('')}
     </div>
     `
         : ''

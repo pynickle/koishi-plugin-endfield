@@ -10,6 +10,7 @@ await build({
     'koishi',
     '@pynickle/koishi-plugin-adapter-onebot',
     'axios',
+    'colorthief',
     'koishi-plugin-cron',
     'koishi-plugin-puppeteer',
   ],
