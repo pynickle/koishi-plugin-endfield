@@ -1,3 +1,13 @@
+## [1.4.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.2...v1.4.3) (2026-02-03)
+
+### 🐛 Bug Fixes
+
+* fix build error ([559b7d3](https://github.com/pynickle/koishi-plugin-endfield/commit/559b7d370cc662550cf45d2aaece16e9e6e735ba))
+
+### 🚀 Improvements
+
+* improve gacha card for multiple versions ([3621f16](https://github.com/pynickle/koishi-plugin-endfield/commit/3621f16cbf406f9d463be069c63194fca1006e27))
+
 ## [1.4.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.1...v1.4.2) (2026-02-03)
 
 ### 🐛 Bug Fixes
