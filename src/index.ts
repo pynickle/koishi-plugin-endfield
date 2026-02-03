@@ -32,27 +32,11 @@ declare module 'koishi' {
       };
       expires_at: Date;
     };
-    endfield_char_pools: {
-      pool_id: string;
-      name: string;
-      chars: any[];
-      pool_start_at_ts: string;
-      pool_end_at_ts: string;
-      start_at_ts: string;
-      end_at_ts: string;
-      europe_pool_start_at_ts: string;
-      europe_pool_end_at_ts: string;
-      sort_id: number;
-      pool_type?: string;
-      star6_chars?: any[];
-      star5_chars?: any[];
-      star4_chars?: any[];
-      up_chars?: any[];
-    };
+    endfield_char_pools: CharPool;
   }
 }
 
-export function apply(ctx: Context, cfg: Config) {
+export async function apply(ctx: Context, cfg: Config) {
   ctx.i18n.define('zh-CN', zhCN);
 
   ctx.database.extend(
@@ -72,6 +56,7 @@ export function apply(ctx: Context, cfg: Config) {
   ctx.database.extend(
     'endfield_char_pools',
     {
+      id: 'string',
       pool_id: 'string',
       name: 'string',
       chars: 'json',
@@ -80,9 +65,10 @@ export function apply(ctx: Context, cfg: Config) {
       start_at_ts: 'string',
       end_at_ts: 'string',
       sort_id: 'integer',
+      dominant_color: 'string',
     },
     {
-      primary: 'pool_id',
+      primary: 'id',
     }
   );
 
@@ -107,5 +93,5 @@ export function apply(ctx: Context, cfg: Config) {
   });
 
   // Fetch char pools on plugin start
-  fetchAndSaveCharPools(ctx, cfg);
+  await fetchAndSaveCharPools(ctx, cfg);
 }

@@ -19,6 +19,63 @@ interface GachaSyncStatus {
   error?: string;
 }
 
+interface GachaRecordsResponse {
+  code: number;
+  message: string;
+  data: {
+    records: any[];
+    pages: number;
+    [key: string]: any;
+  };
+}
+
+async function fetchAllGachaRecords(
+  ctx: Context,
+  cfg: Config,
+  frameworkToken: string
+): Promise<any> {
+  let allRecords: any[] = [];
+  let currentPage = 1;
+  let totalPages = 1;
+
+  do {
+    const recordsUrl = new URL('/api/endfield/gacha/records', cfg.apiBaseUrl);
+    recordsUrl.searchParams.set('page', currentPage.toString());
+
+    const recordsResponse = await axios.get<GachaRecordsResponse>(recordsUrl.toString(), {
+      headers: {
+        'X-Framework-Token': frameworkToken,
+        'X-API-KEY': cfg.apiKey,
+      },
+    });
+
+    const recordsData = recordsResponse.data;
+
+    if (recordsData.code !== 0) {
+      throw new Error(recordsData.message);
+    }
+
+    allRecords = [...allRecords, ...recordsData.data.records];
+    totalPages = recordsData.data.pages;
+    currentPage++;
+  } while (currentPage <= totalPages);
+
+  return {
+    ...(
+      await axios.get<GachaRecordsResponse>(
+        new URL('/api/endfield/gacha/records', cfg.apiBaseUrl).toString(),
+        {
+          headers: {
+            'X-Framework-Token': frameworkToken,
+            'X-API-KEY': cfg.apiKey,
+          },
+        }
+      )
+    ).data.data,
+    records: allRecords,
+  };
+}
+
 export async function endfieldGacha(
   ctx: Context,
   session: Session,
@@ -75,7 +132,7 @@ export async function endfieldGacha(
 
       let pollingInterval: string | number | NodeJS.Timeout;
       let pollingAttempts = 0;
-      const maxAttempts = 300; // 最多轮询 5 分钟
+      const maxAttempts = 300;
 
       return new Promise<string>((resolve) => {
         pollingInterval = setInterval(async () => {
@@ -114,26 +171,16 @@ export async function endfieldGacha(
                   await session.onebot.deleteMsg(syncMsgId);
                 }
 
-                const recordsUrl = new URL('/api/endfield/gacha/records', cfg.apiBaseUrl);
-                const recordsResponse = await axios.get(recordsUrl.toString(), {
-                  headers: {
-                    'X-Framework-Token': frameworkToken,
-                    'X-API-KEY': cfg.apiKey,
-                  },
-                });
-
-                const recordsData = recordsResponse.data;
-
-                if (recordsData.code !== 0) {
+                try {
+                  const allRecordsData = await fetchAllGachaRecords(ctx, cfg, frameworkToken);
+                  resolve(await renderGachaRecord(ctx, cfg, allRecordsData, charPools));
+                } catch (error) {
                   resolve(
                     session.text('.recordsError', {
-                      message: recordsData.message,
+                      message: error instanceof Error ? error.message : 'Unknown error',
                     })
                   );
-                  return;
                 }
-
-                resolve(await renderGachaRecord(ctx, recordsData.data, charPools));
               } else if (syncStatus.status === 'failed') {
                 clearInterval(pollingInterval);
 
@@ -154,23 +201,14 @@ export async function endfieldGacha(
         }, 2000);
       });
     } else {
-      const recordsUrl = new URL('/api/endfield/gacha/records', cfg.apiBaseUrl);
-      const recordsResponse = await axios.get(recordsUrl.toString(), {
-        headers: {
-          'X-Framework-Token': frameworkToken,
-          'X-API-KEY': cfg.apiKey,
-        },
-      });
-
-      const recordsData = recordsResponse.data;
-
-      if (recordsData.code !== 0) {
+      try {
+        const allRecordsData = await fetchAllGachaRecords(ctx, cfg, frameworkToken);
+        return await renderGachaRecord(ctx, cfg, allRecordsData, charPools);
+      } catch (error) {
         return session.text('.recordsError', {
-          message: recordsData.message,
+          message: error instanceof Error ? error.message : 'Unknown error',
         });
       }
-
-      return await renderGachaRecord(ctx, recordsData.data, charPools);
     }
   } catch (error) {
     ctx.logger.error('Endfield gacha error:', error);

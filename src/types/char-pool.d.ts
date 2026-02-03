@@ -6,6 +6,7 @@
 }
 
 interface CharPool {
+  id: string;
   pool_id: string;
   name: string;
   chars: CharPoolChar[];
@@ -14,4 +15,5 @@ interface CharPool {
   start_at_ts: string;
   end_at_ts: string;
   sort_id: number;
+  dominant_color: string;
 }

@@ -1,4 +1,5 @@
 import { Config } from '../../config/config';
+import { getDominantColor } from '../../utils/color-utils';
 import axios from 'axios';
 import { Context } from 'koishi';
 
@@ -21,11 +22,16 @@ export async function fetchAndSaveCharPools(ctx: Context, cfg: Config): Promise<
     const charPools: CharPool[] = charPoolsData.data.pools;
 
     try {
-      await ctx.database.upsert(
-        'endfield_char_pools',
-        charPools.map((charPool) => {
+      const processedPools = await Promise.all(
+        charPools.map(async (charPool) => {
+          let dominantColor: string | null = null;
+
+          if (charPool.chars[0].pic) {
+            dominantColor = await getDominantColor(ctx, charPool.chars[0].pic);
+          }
+
           return {
-            pool_id: charPool.pool_id,
+            id: charPool.pool_id,
             name: charPool.name,
             chars: charPool.chars,
             pool_start_at_ts: charPool.pool_start_at_ts,
@@ -33,9 +39,12 @@ export async function fetchAndSaveCharPools(ctx: Context, cfg: Config): Promise<
             start_at_ts: charPool.start_at_ts,
             end_at_ts: charPool.end_at_ts,
             sort_id: charPool.sort_id,
+            dominant_color: dominantColor,
           };
         })
       );
+
+      await ctx.database.upsert('endfield_char_pools', processedPools);
     } catch (error) {
       ctx.logger.error(`Failed to save char pool:`, error);
     }

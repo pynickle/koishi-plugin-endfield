@@ -1,4 +1,6 @@
-﻿import { Context } from 'koishi';
+import { Config } from '../../config/config';
+import axios from 'axios';
+import { Context } from 'koishi';
 
 interface GachaRecord {
   char_id: string;
@@ -20,17 +22,25 @@ interface ProcessedPool {
   records: GachaRecord[];
   star6: { name: string; count: number; isUp: boolean }[];
   star5Count: number;
+  poolId: string;
 }
 
-export function generateGachaRecord(
+interface PoolVersion {
+  version: string;
+  parts: number[];
+  specialPool?: ProcessedPool;
+  weaponPool?: ProcessedPool;
+}
+
+export async function generateGachaRecord(
   ctx: Context,
+  cfg: Config,
   data: { records: GachaRecord[]; user_info: any },
   poolInfoList: CharPool[]
-): string {
+): Promise<string> {
   const { records, user_info } = data;
 
-  // Helper: Sort records chronologically for calculations, then reverse for display
-  const sortedRecords = records.reverse(); // [...records].sort((a, b) => Number(a.gacha_ts) - Number(b.gacha_ts));
+  records.reverse();
 
   // Stats Containers
   let totalPulls = 0;
@@ -49,26 +59,34 @@ export function generateGachaRecord(
 
   const getPoolType = (id: string): 'special' | 'weapon' | 'standard' | 'beginner' => {
     if (id.includes('beginner')) return 'beginner';
-    if (id.includes('weapon')) return 'weapon';
+    if (id.includes('weaponbox_constant')) return 'weapon';
     if (id === 'standard') return 'standard';
-    return 'special'; // Default to special/event for others
+    return 'special';
+  };
+
+  const extractVersion = (poolId: string): string => {
+    const match = poolId.match(/(special|weaponbox|weponbox)_(\d+_\d+_\d+)/);
+    return match ? match[2] : '';
   };
 
   const isUpChar = (charName: string, poolName: string, poolId: string) => {
-    // Find matching pool info
     const info = poolInfoList.find((p) => p.name === poolName || p.pool_id === poolId);
     if (!info) return false;
     return info.chars?.some((c) => c.name === charName && c.rarity === 'rarity_6');
   };
 
+  const getPoolDominantColor = (poolId: string): string => {
+    const info = poolInfoList.find((p) => p.pool_id === poolId);
+    return info?.dominant_color || '#ff3860';
+  };
+
   // Process Pity and Distribution
-  // We process a temp map to track pity strictly by pool_name scope
   const poolPityCounter = new Map<string, number>();
 
-  sortedRecords.forEach((rec) => {
+  records.forEach((rec) => {
     totalPulls++;
 
-    if (rec.is_free) return; // Skip free pulls
+    if (rec.is_free) return;
     const pKey = rec.pool_id;
     const pType = getPoolType(pKey);
 
@@ -78,9 +96,10 @@ export function generateGachaRecord(
         type: pType,
         total: 0,
         pity: 0,
-        records: [], // Store only necessary ones if needed, mainly strictly for 6* tracking
+        records: [],
         star6: [],
         star5Count: 0,
+        poolId: pKey,
       });
       poolPityCounter.set(pKey, 0);
     }
@@ -107,7 +126,7 @@ export function generateGachaRecord(
       categoryStats[pType].sixStar++;
       if (isUp) categoryStats[pType].upSixStar++;
 
-      poolPityCounter.set(pKey, 0); // Reset pity
+      poolPityCounter.set(pKey, 0);
     } else {
       poolPityCounter.set(pKey, currentPity);
     }
@@ -161,7 +180,7 @@ export function generateGachaRecord(
   };
 
   // Render Functions
-  const renderPoolCard = (pool: ProcessedPool) => {
+  const renderPoolCard = (pool: ProcessedPool, color?: string) => {
     const reversedHistory = [...pool.star6].reverse();
     const avg =
       pool.star6.length > 0 ? ((pool.total - pool.pity) / pool.star6.length).toFixed(1) : '-';
@@ -175,7 +194,7 @@ export function generateGachaRecord(
     }
 
     return `
-      <div class="column is-12 box mb-4" style="border-left: 5px solid ${pool.type === 'special' ? '#ff3860' : '#3273dc'}">
+      <div class="column is-12 box mb-4" style="border-left: 5px solid ${color ? color : pool.type === 'special' ? '#ff3860' : '#3273dc'}">
         <nav class="level is-mobile mb-2">
           <div class="level-left">
             <div class="level-item">
@@ -231,8 +250,41 @@ export function generateGachaRecord(
   };
 
   const poolList = Array.from(poolsMap.values());
-  const specialPools = poolList.filter((p) => p.type === 'special');
-  const weaponPools = poolList.filter((p) => p.type === 'weapon');
+  const versionMap = new Map<string, PoolVersion>();
+
+  // Group pools by version
+  poolList.forEach((pool) => {
+    const version = extractVersion(pool.poolId);
+    if (!version) return;
+
+    if (!versionMap.has(version)) {
+      const parts = version.split('_').map(Number);
+      versionMap.set(version, {
+        version,
+        parts,
+      });
+    }
+
+    const versionData = versionMap.get(version)!;
+    if (pool.poolId.startsWith('special')) {
+      versionData.specialPool = pool;
+    } else {
+      versionData.weaponPool = pool;
+    }
+  });
+
+  // Sort versions in descending order
+  const sortedVersions = Array.from(versionMap.values()).sort((a, b) => {
+    for (let i = 0; i < 3; i++) {
+      if (a.parts[i] !== b.parts[i]) {
+        return b.parts[i] - a.parts[i];
+      }
+    }
+    return 0;
+  });
+
+  const specialPools = poolList.filter((p) => p.type === 'special' && !extractVersion(p.poolId));
+  const weaponPools = poolList.filter((p) => p.type === 'weapon' && !extractVersion(p.poolId));
   const otherPools = poolList.filter((p) => p.type !== 'special' && p.type !== 'weapon');
 
   return `
@@ -301,11 +353,136 @@ export function generateGachaRecord(
       </div>
     </div>
 
-    <!-- Categorized Analysis: Special -->
+    <!-- Version-based Pools -->
+    ${
+      sortedVersions.length > 0
+        ? `
+    <div class="divider" data-label="限定卡池"></div>
+    <div class="columns is-multiline m-1">
+      ${await Promise.all(
+        sortedVersions.map(async (versionData, index) => {
+          const hasSpecial = !!versionData.specialPool;
+          const hasWeapon = !!versionData.weaponPool;
+
+          if (!hasSpecial && !hasWeapon) return '';
+
+          // Process version string
+          const versionParts = versionData.version.split('_').map(Number);
+          const verString = `VER ${versionParts[0]}.${versionParts[1]}`;
+          const upString = `UP ${versionParts[2]}`;
+
+          // Get pool info for date range
+          let dateRange = '202X.XX.XX - 202X.XX.XX';
+          const formatDate = (timestamp: string | number) => {
+            const date = new Date(Number(timestamp) * 1000);
+            return (
+              date.getFullYear() +
+              '.' +
+              String(date.getMonth() + 1).padStart(2, '0') +
+              '.' +
+              String(date.getDate()).padStart(2, '0')
+            );
+          };
+
+          // Try to find special pool info first by constructing pool_id
+          const specialPoolId = `special_${versionData.version}`;
+          let poolInfo = poolInfoList.find((p) => p.pool_id === specialPoolId);
+
+          if (!poolInfo) {
+            try {
+              // Fetch pool info from API
+              const poolUrl = new URL('/api/endfield/gacha/pool-chars', cfg.apiBaseUrl);
+              const poolResponse = await axios.get(poolUrl.toString(), {
+                params: {
+                  pool_id: specialPoolId,
+                },
+                headers: {
+                  'X-API-KEY': cfg.apiKey,
+                },
+              });
+
+              if (poolResponse.data.code === 0 && poolResponse.data.data.pools.length > 0) {
+                const fetchedPool = poolResponse.data.data.pools[0];
+
+                // Check if there's a pool with the same name in poolInfoList
+                const existingPool = poolInfoList.find((p) => p.name === fetchedPool.pool_name);
+
+                if (existingPool) {
+                  // Update existing pool with new pool_id
+                  existingPool.pool_id = specialPoolId;
+                  await ctx.database.set('endfield_char_pools', existingPool.id, {
+                    pool_id: specialPoolId,
+                  });
+                  poolInfo = existingPool;
+                } else {
+                  // If no existing pool, fetch and save all char pools
+                  await import('../services/char-pools').then((module) => {
+                    return module.fetchAndSaveCharPools(ctx, cfg);
+                  });
+
+                  // Get updated pool data from database
+                  const updatedPools = await ctx.database.get('endfield_char_pools', {});
+
+                  // Check again for pool with the same name
+                  const updatedExistingPool = updatedPools.find(
+                    (p) => p.name === fetchedPool.pool_name
+                  );
+                  if (updatedExistingPool) {
+                    updatedExistingPool.pool_id = specialPoolId;
+                    await ctx.database.set('endfield_char_pools', updatedExistingPool.id, {
+                      pool_id: specialPoolId,
+                    });
+                    poolInfo = updatedExistingPool;
+                  }
+                }
+              }
+            } catch (error) {
+              ctx.logger.error('Error fetching pool info:', error);
+            }
+          }
+
+          let dominantColor = '#ff3860';
+          if (poolInfo) {
+            const startDate = formatDate(poolInfo.pool_start_at_ts);
+            const endDate = formatDate(poolInfo.pool_end_at_ts);
+            dateRange = `${startDate} - ${endDate}`;
+
+            dominantColor = poolInfo.dominant_color;
+          }
+
+          const content = [];
+          if (hasSpecial) content.push(renderPoolCard(versionData.specialPool!, dominantColor));
+          if (hasWeapon) content.push(renderPoolCard(versionData.weaponPool!, dominantColor));
+
+          const result = content.join('');
+
+          return `
+            <div class="level mb-4 has-background-light p-3" style="border-left: 5px solid ${dominantColor};"> <div class="level-left">
+                <div class="level-item">
+                  <h2 class="title is-4 is-flex is-align-items-center">
+                    <span class="tag is-black is-medium mr-4">${verString}</span>
+                    ${upString}
+                  </h2>
+                </div>
+              </div>
+              <div class="level-right">
+                <div class="level-item">
+                  <span class="has-text-grey is-size-7">${dateRange}</span>
+                </div>
+              </div>
+            </div>${result}`;
+        })
+      ).then((htmlParts) => htmlParts.join(''))}
+    </div>
+    `
+        : ''
+    }
+
+    <!-- Other Special Pools -->
     ${
       specialPools.length > 0
         ? `
-    <div class="divider" data-label="角色活动 / 限定"></div>
+    <div class="divider" data-label="限定卡池"></div>
     <div class="columns is-multiline m-1">
       ${specialPools.map(renderPoolCard).join('')}
     </div>
@@ -313,17 +490,17 @@ export function generateGachaRecord(
         : ''
     }
 
-    <!-- Categorized Analysis: Weapons -->
+    <!-- Other Weapon Pools -->
     ${
       weaponPools.length > 0
         ? `
-    <div class="divider" data-label="武器申领"></div>
+    <div class="divider" data-label="常驻武器申领"></div>
     <div class="level is-mobile px-2 m-1 mb-2">
-        <div class="level-left has-text-grey is-size-7">武器池总计：${categoryStats.weapon.pulls} 抽</div>
+        <div class="level-left has-text-grey is-size-7">常驻武器池总计：${categoryStats.weapon.pulls} 抽</div>
         <div class="level-right has-text-weight-bold is-size-7">平均花费：${weaponAvg} / 六星</div>
     </div>
     <div class="columns is-multiline m-1">
-      ${weaponPools.map(renderPoolCard).join('')}
+      ${weaponPools.map((p) => renderPoolCard(p)).join('')}
     </div>
     `
         : ''
@@ -335,7 +512,7 @@ export function generateGachaRecord(
         ? `
     <div class="divider" data-label="常驻 / 新手"></div>
     <div class="columns is-multiline m-1">
-      ${otherPools.map(renderPoolCard).join('')}
+      ${otherPools.map((p) => renderPoolCard(p)).join('')}
     </div>
     `
         : ''
@@ -348,11 +525,12 @@ export function generateGachaRecord(
 
 export async function renderGachaRecord(
   ctx: Context,
+  cfg: Config,
   cardData: any,
   poolData: any
 ): Promise<string> {
   const { puppeteer } = ctx;
 
-  const html = generateGachaRecord(ctx, cardData, poolData);
+  const html = await generateGachaRecord(ctx, cfg, cardData, poolData);
   return puppeteer.render(html);
 }
