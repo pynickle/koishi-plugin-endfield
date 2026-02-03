@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.3.0...v1.4.0) (2026-02-03)
+
+### ✨ Features
+
+* add gacha record ([d41c9ca](https://github.com/pynickle/koishi-plugin-endfield/commit/d41c9caf72b42d96bb65de04438d0b08c5685922))
+
 ## [1.2.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.2.1...v1.2.2) (2026-02-02)
 
 ### 🚀 Improvements
