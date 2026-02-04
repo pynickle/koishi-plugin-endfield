@@ -1,3 +1,13 @@
+## [1.8.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.7.0...v1.8.0) (2026-02-04)
+
+### ✨ Features
+
+* add subscribe stamina ([2947793](https://github.com/pynickle/koishi-plugin-endfield/commit/2947793a9d42c79ae161be41698ea04ffeaa7f86))
+
+### 🐛 Bug Fixes
+
+* fix json ([ce0e8a1](https://github.com/pynickle/koishi-plugin-endfield/commit/ce0e8a1b41ad185cad43e3aa37b246fc26a7da82))
+
 ## [1.7.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.6.0...v1.7.0) (2026-02-04)
 
 ### ✨ Features
