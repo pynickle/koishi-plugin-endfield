@@ -1,3 +1,9 @@
+## [1.4.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.3...v1.4.4) (2026-02-04)
+
+### 🚀 Improvements
+
+* use char pools db v2 ([9bec60a](https://github.com/pynickle/koishi-plugin-endfield/commit/9bec60a28b997c262f0eda7d413710a04082b712))
+
 ## [1.4.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.2...v1.4.3) (2026-02-03)
 
 ### 🐛 Bug Fixes
