@@ -47,6 +47,22 @@
         "staminaSuccess": "玩家：{name}\n等级：{level}\n体力：{current}/{max}\n体力恢复满时间：{fullTime}\n每日活跃度：{activation}/{maxActivation}",
         "staminaError": "获取体力信息失败：{message}"
       }
+    },
+    "endfield.subscribe": {
+      "description": "订阅每日活跃度提醒",
+      "messages": {
+        "invalidTime": "时间格式无效，请使用 HH:MM 格式，例如 23:50",
+        "differentGroup": "您已在群 {existingGroup} 订阅了 {existingTime} 的提醒，是否需要修改？",
+        "updateSuccess": "订阅时间已更新为 {time}",
+        "createSuccess": "订阅成功！将在每天 {time} 提醒您完成每日任务"
+      }
+    },
+    "endfield.unsubscribe": {
+      "description": "取消订阅每日活跃度提醒",
+      "messages": {
+        "noSubscription": "您尚未订阅提醒",
+        "unsubscribeSuccess": "取消订阅成功"
+      }
     }
   }
 }

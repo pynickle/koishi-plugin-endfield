@@ -24,7 +24,7 @@ export async function endfieldStamina(ctx: Context, session: Session, cfg: Confi
     const staminaData = staminaResponse.data;
 
     if (staminaData.code !== 0) {
-      return session.text('commands.endfield.stamina.messages.staminaError', {
+      return session.text('.staminaError', {
         message: staminaData.message,
       });
     }
@@ -36,7 +36,7 @@ export async function endfieldStamina(ctx: Context, session: Session, cfg: Confi
     const fullTime = new Date(maxTs * 1000);
     const formattedTime = `${fullTime.getFullYear()}-${String(fullTime.getMonth() + 1).padStart(2, '0')}-${String(fullTime.getDate()).padStart(2, '0')} ${String(fullTime.getHours()).padStart(2, '0')}:${String(fullTime.getMinutes()).padStart(2, '0')}`;
 
-    return session.text('commands.endfield.stamina.messages.staminaSuccess', {
+    return session.text('.staminaSuccess', {
       name: role.name,
       level: role.level,
       current: stamina.current,

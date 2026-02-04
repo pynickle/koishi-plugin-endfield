@@ -25,7 +25,7 @@ export async function endfieldChar(ctx: Context, session: Session, cfg: Config, 
     const noteData = noteResponse.data;
 
     if (noteData.code !== 0) {
-      return session.text('commands.endfield.card.messages.noteError', {
+      return session.text('.noteError', {
         message: noteData.message,
       });
     }
@@ -33,7 +33,7 @@ export async function endfieldChar(ctx: Context, session: Session, cfg: Config, 
     const targetChar = noteData.data.chars.find((char: any) => char.name === charName);
 
     if (!targetChar) {
-      return session.text('commands.endfield.card.messages.charNotFound', {
+      return session.text('.charNotFound', {
         charName: charName,
       });
     }
@@ -54,7 +54,7 @@ export async function endfieldChar(ctx: Context, session: Session, cfg: Config, 
     const cardData = cardResponse.data;
 
     if (cardData.code !== 0) {
-      return session.text('commands.endfield.card.messages.cardError', {
+      return session.text('.cardError', {
         message: cardData.message,
       });
     }

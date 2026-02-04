@@ -4,10 +4,12 @@ import { endfieldChar } from './core/commands/char';
 import { endfieldGacha } from './core/commands/gacha';
 import { endfieldSign } from './core/commands/sign';
 import { endfieldStamina } from './core/commands/stamina';
+import { endfieldSubscribe, endfieldUnsubscribe } from './core/commands/subscribe';
 import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
 import { fetchAndSaveCharPools } from './core/services/char-pools';
 import { autoSignAll } from './core/services/sign';
+import { checkSubscriptions, setupSubscribeService } from './core/services/subscribe';
 import zhCN from './locales/zh-CN.json';
 import { Context } from 'koishi';
 
@@ -44,6 +46,13 @@ declare module 'koishi' {
         rarity: number;
         is_up: boolean;
       }>;
+    };
+    endfield_subscriptions: {
+      user_id: string;
+      group_id: string;
+      time: string;
+      created_at: string;
+      updated_at: string;
     };
   }
 }
@@ -96,6 +105,20 @@ export async function apply(ctx: Context, cfg: Config) {
     }
   );
 
+  ctx.database.extend(
+    'endfield_subscriptions',
+    {
+      user_id: 'string',
+      group_id: 'string',
+      time: 'string',
+      created_at: 'string',
+      updated_at: 'string',
+    },
+    {
+      primary: 'user_id',
+    }
+  );
+
   ctx.command('endfield.auth').action(async ({ session }) => endfieldAuth(ctx, session, cfg));
   ctx.command('endfield.sign').action(async ({ session }) => endfieldSign(ctx, session, cfg));
   ctx
@@ -106,6 +129,12 @@ export async function apply(ctx: Context, cfg: Config) {
     .option('noSync', '-n 不同步直接获取抽卡记录')
     .action(async ({ session, options }) => endfieldGacha(ctx, session, cfg, options));
   ctx.command('endfield.stamina').action(async ({ session }) => endfieldStamina(ctx, session, cfg));
+  ctx
+    .command('endfield.subscribe <time>')
+    .action(async ({ session }, time) => endfieldSubscribe(ctx, session, cfg, time));
+  ctx
+    .command('endfield.unsubscribe')
+    .action(async ({ session }) => endfieldUnsubscribe(ctx, session, cfg));
 
   // Setup auto sign task, run at 00:01 every day
   ctx.cron('1 0 * * *', async () => {
@@ -119,4 +148,9 @@ export async function apply(ctx: Context, cfg: Config) {
 
   // Fetch char pools on plugin start
   await fetchAndSaveCharPools(ctx, cfg);
+
+  // Check subscriptions every minute
+  ctx.cron('* * * * *', async () => {
+    await checkSubscriptions(ctx, cfg);
+  });
 }
