@@ -73,6 +73,8 @@ export async function apply(ctx: Context, cfg: Config) {
     }
   );
 
+  await ctx.database.drop('endfield_char_pools');
+
   ctx.database.extend(
     'endfield_char_pools_v2',
     {
