@@ -40,8 +40,6 @@ declare module 'koishi' {
 export async function apply(ctx: Context, cfg: Config) {
   ctx.i18n.define('zh-CN', zhCN);
 
-  await ctx.database.drop('endfield_char_pools');
-
   ctx.database.extend(
     'endfield_bindings_v3',
     {
