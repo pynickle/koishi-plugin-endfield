@@ -1,3 +1,9 @@
+## [1.4.6](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.5...v1.4.6) (2026-02-04)
+
+### 🐛 Bug Fixes
+
+* temp delete drop db code ([ce4e606](https://github.com/pynickle/koishi-plugin-endfield/commit/ce4e60625105746a540ee10b2a21e85502526fd7))
+
 ## [1.4.5](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.4...v1.4.5) (2026-02-04)
 
 ### 🐛 Bug Fixes
