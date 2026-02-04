@@ -9,7 +9,7 @@ import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
 import { fetchAndSaveCharPools } from './core/services/char-pools';
 import { autoSignAll } from './core/services/sign';
-import { checkSubscriptions, setupSubscribeService } from './core/services/subscribe';
+import { checkSubscriptions } from './core/services/subscribe';
 import zhCN from './locales/zh-CN.json';
 import { Context } from 'koishi';
 
