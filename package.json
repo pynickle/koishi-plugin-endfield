@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-endfield",
   "description": "Endfield Plugin for Koishi",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "main": "lib/index.cjs",
   "typings": "lib/index.d.ts",
   "type": "module",
