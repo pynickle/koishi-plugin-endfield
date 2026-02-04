@@ -40,6 +40,13 @@
         "recordsError": "获取抽卡记录失败：{message}",
         "syncFailed": "同步抽卡记录失败：{message}"
       }
+    },
+    "endfield.stamina": {
+      "description": "获取体力信息",
+      "messages": {
+        "staminaSuccess": "玩家：{name}\n等级：{level}\n体力：{current}/{max}\n体力恢复满时间：{fullTime}\n每日活跃度：{activation}/{maxActivation}",
+        "staminaError": "获取体力信息失败：{message}"
+      }
     }
   }
 }

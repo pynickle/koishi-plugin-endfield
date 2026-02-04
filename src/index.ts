@@ -3,6 +3,7 @@ import { endfieldAuth } from './core/commands/auth';
 import { endfieldChar } from './core/commands/char';
 import { endfieldGacha } from './core/commands/gacha';
 import { endfieldSign } from './core/commands/sign';
+import { endfieldStamina } from './core/commands/stamina';
 import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
 import { fetchAndSaveCharPools } from './core/services/char-pools';
@@ -104,6 +105,7 @@ export async function apply(ctx: Context, cfg: Config) {
     .command('endfield.gacha')
     .option('noSync', '-n 不同步直接获取抽卡记录')
     .action(async ({ session, options }) => endfieldGacha(ctx, session, cfg, options));
+  ctx.command('endfield.stamina').action(async ({ session }) => endfieldStamina(ctx, session, cfg));
 
   // Setup auto sign task, run at 00:01 every day
   ctx.cron('1 0 * * *', async () => {
