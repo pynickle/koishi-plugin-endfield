@@ -21,24 +21,14 @@ export async function endfieldSubscribe(ctx: Context, session: Session, cfg: Con
     const existingSubscriptions = await ctx.database.get('endfield_subscriptions', session.userId);
 
     if (existingSubscriptions.length > 0) {
-      const existingSubscription = existingSubscriptions[0];
-
-      // Check if subscription is in a different group
-      if (existingSubscription.group_id !== session.channelId) {
-        return session.text('.differentGroup', {
-          existingTime: existingSubscription.time,
-          existingGroup: existingSubscription.group_id,
-        });
-      } else {
-        // Update existing subscription
-        await ctx.database.set('endfield_subscriptions', session.userId, {
-          time,
-          updated_at: dayjs().toISOString(),
-        });
-        return session.text('.updateSuccess', {
-          time,
-        });
-      }
+      // Update existing subscription
+      await ctx.database.set('endfield_subscriptions', session.userId, {
+        time,
+        updated_at: dayjs().toISOString(),
+      });
+      return session.text('.updateSuccess', {
+        time,
+      });
     } else {
       // Create new subscription
       await ctx.database.create('endfield_subscriptions', {
@@ -109,27 +99,16 @@ export async function endfieldStaminaSubscribe(
     );
 
     if (existingSubscriptions.length > 0) {
-      const existingSubscription = existingSubscriptions[0];
-
-      // Check if subscription is in a different group
-      if (existingSubscription.group_id !== session.channelId) {
-        return session.text('.differentGroupStamina', {
-          existingDuration: existingSubscription.duration,
-          existingInterval: existingSubscription.reminder_interval,
-          existingGroup: existingSubscription.group_id,
-        });
-      } else {
-        // Update existing subscription
-        await ctx.database.set('endfield_stamina_subscriptions', session.userId, {
-          duration,
-          reminder_interval,
-          updated_at: dayjs().toISOString(),
-        });
-        return session.text('.updateSuccessStamina', {
-          duration,
-          reminder_interval,
-        });
-      }
+      // Update existing subscription
+      await ctx.database.set('endfield_stamina_subscriptions', session.userId, {
+        duration,
+        reminder_interval,
+        updated_at: dayjs().toISOString(),
+      });
+      return session.text('.updateSuccessStamina', {
+        duration,
+        reminder_interval,
+      });
     } else {
       // Create new subscription
       await ctx.database.create('endfield_stamina_subscriptions', {
