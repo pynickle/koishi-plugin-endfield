@@ -33,11 +33,14 @@ declare module 'koishi' {
       expires_at: Date;
     };
     endfield_char_pools: CharPool;
+    endfield_char_pools_v2: CharPool;
   }
 }
 
 export async function apply(ctx: Context, cfg: Config) {
   ctx.i18n.define('zh-CN', zhCN);
+
+  await ctx.database.drop('endfield_char_pools');
 
   ctx.database.extend(
     'endfield_bindings_v3',
@@ -54,7 +57,7 @@ export async function apply(ctx: Context, cfg: Config) {
   );
 
   ctx.database.extend(
-    'endfield_char_pools',
+    'endfield_char_pools_v2',
     {
       id: 'string',
       pool_id: 'string',

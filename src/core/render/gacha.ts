@@ -410,7 +410,7 @@ export async function generateGachaRecord(
                 if (existingPool) {
                   // Update existing pool with new pool_id
                   existingPool.pool_id = specialPoolId;
-                  await ctx.database.set('endfield_char_pools', existingPool.id, {
+                  await ctx.database.set('endfield_char_pools_v2', existingPool.id, {
                     pool_id: specialPoolId,
                   });
                   poolInfo = existingPool;
@@ -421,7 +421,7 @@ export async function generateGachaRecord(
                   });
 
                   // Get updated pool data from database
-                  const updatedPools = await ctx.database.get('endfield_char_pools', {});
+                  const updatedPools = await ctx.database.get('endfield_char_pools_v2', {});
 
                   // Check again for pool with the same name
                   const updatedExistingPool = updatedPools.find(
@@ -429,7 +429,7 @@ export async function generateGachaRecord(
                   );
                   if (updatedExistingPool) {
                     updatedExistingPool.pool_id = specialPoolId;
-                    await ctx.database.set('endfield_char_pools', updatedExistingPool.id, {
+                    await ctx.database.set('endfield_char_pools_v2', updatedExistingPool.id, {
                       pool_id: specialPoolId,
                     });
                     poolInfo = updatedExistingPool;

@@ -44,7 +44,7 @@ export async function fetchAndSaveCharPools(ctx: Context, cfg: Config): Promise<
         })
       );
 
-      await ctx.database.upsert('endfield_char_pools', processedPools);
+      await ctx.database.upsert('endfield_char_pools_v2', processedPools);
     } catch (error) {
       ctx.logger.error(`Failed to save char pool:`, error);
     }

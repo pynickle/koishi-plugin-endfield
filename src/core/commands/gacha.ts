@@ -92,7 +92,7 @@ export async function endfieldGacha(
     const binding = bindings[0];
     const frameworkToken = binding.framework_token;
 
-    const charPools = await ctx.database.get('endfield_char_pools', {});
+    const charPools = await ctx.database.get('endfield_char_pools_v2', {});
 
     if (!options.noSync) {
       let syncMsgId: string | number;
