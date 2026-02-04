@@ -1,3 +1,14 @@
+## [1.6.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.5.0...v1.6.0) (2026-02-04)
+
+### ✨ Features
+
+* add stamina info ([62fa867](https://github.com/pynickle/koishi-plugin-endfield/commit/62fa86787d6e43e16cb644a1b61292ef05e0e6cf))
+
+### 📚 Documentation
+
+* Add GNU AGPL v3 license ([f68f631](https://github.com/pynickle/koishi-plugin-endfield/commit/f68f6310696d5d53e62c4374831561308d41f9e3))
+* add README ([2ec988e](https://github.com/pynickle/koishi-plugin-endfield/commit/2ec988ec1a43e9f6a0bb4f6a033a5b00ed645769))
+
 ## [1.5.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.8...v1.5.0) (2026-02-04)
 
 ### ✨ Features
