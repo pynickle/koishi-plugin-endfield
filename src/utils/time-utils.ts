@@ -19,7 +19,8 @@ export function parseCustomTime(timeStr: string): number | null {
 
   while (i < s.length) {
     const numStart = i;
-    while (i < s.length && s.charCodeAt(i) >= 48 && s.charCodeAt(i) <= 57) { // '0' ~ '9'
+    while (i < s.length && s.charCodeAt(i) >= 48 && s.charCodeAt(i) <= 57) {
+      // '0' ~ '9'
       i++;
     }
 
