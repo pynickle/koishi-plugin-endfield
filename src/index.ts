@@ -57,6 +57,25 @@ export async function apply(ctx: Context, cfg: Config) {
   );
 
   ctx.database.extend(
+    'endfield_char_pools',
+    {
+      id: 'string',
+      pool_id: 'string',
+      name: 'string',
+      chars: 'json',
+      pool_start_at_ts: 'string',
+      pool_end_at_ts: 'string',
+      start_at_ts: 'string',
+      end_at_ts: 'string',
+      sort_id: 'integer',
+      dominant_color: 'string',
+    },
+    {
+      primary: 'id',
+    }
+  );
+
+  ctx.database.extend(
     'endfield_char_pools_v2',
     {
       id: 'string',
