@@ -75,6 +75,33 @@ export async function generateGachaRecord(
     return info.chars?.some((c) => c.name === charName && c.rarity === 'rarity_6');
   };
 
+  const isUpWeapon = async (weaponName: string, poolId: string): Promise<boolean> => {
+    try {
+      // Handle weaponbox_constant pools with hardcoded up weapons
+      const constantWeaponMap: Record<string, string> = {
+        weaponbox_constant_1: '赫拉芬格',
+        weaponbox_constant_2: '沧溟星梦',
+        weaponbox_constant_3: '不知归',
+        weaponbox_constant_4: '负山',
+        weaponbox_constant_5: '大雷斑',
+      };
+
+      if (poolId in constantWeaponMap) {
+        return weaponName === constantWeaponMap[poolId];
+      }
+
+      // Get weapon pool info from database
+      const weaponPoolInfo = await ctx.database.get('endfield_weapon_pools', poolId);
+      if (weaponPoolInfo.length === 0) return false;
+
+      // Check if weapon is in up_weapons list
+      return weaponPoolInfo[0].up_weapons.some((weapon: any) => weapon.name === weaponName);
+    } catch (error) {
+      ctx.logger.error('Error checking up weapon:', error);
+      return false;
+    }
+  };
+
   const getPoolDominantColor = (poolId: string): string => {
     const info = poolInfoList.find((p) => p.pool_id === poolId);
     return info?.dominant_color || '#ff3860';
@@ -83,10 +110,10 @@ export async function generateGachaRecord(
   // Process Pity and Distribution
   const poolPityCounter = new Map<string, number>();
 
-  records.forEach((rec) => {
+  for (const rec of records) {
     totalPulls++;
 
-    if (rec.is_free) return;
+    if (rec.is_free) continue;
     const pKey = rec.pool_id;
     const pType = getPoolType(pKey);
 
@@ -114,7 +141,10 @@ export async function generateGachaRecord(
 
     if (rec.rarity === 6) {
       const isUp =
-        pType === 'special' ? isUpChar(rec.char_name, rec.pool_name, rec.pool_id) : false;
+        pType === 'special' || pType === 'weapon'
+          ? isUpChar(rec.char_name, rec.pool_name, rec.pool_id) ||
+            (await isUpWeapon(rec.char_name, rec.pool_id))
+          : false;
 
       poolData.star6.push({
         name: rec.char_name,
@@ -133,7 +163,7 @@ export async function generateGachaRecord(
 
     // Update live pity in object
     poolData.pity = poolPityCounter.get(pKey) || 0;
-  });
+  }
 
   for (const [pKey, pValue] of poolPityCounter) {
     const pType = getPoolType(pKey);
@@ -187,7 +217,7 @@ export async function generateGachaRecord(
 
     // Stats Line
     let extraStats = '';
-    if (pool.type === 'special') {
+    if (pool.type === 'special' || pool.type === 'weapon') {
       const upCount = pool.star6.filter((s) => s.isUp).length;
       const winRate = pool.star6.length > 0 ? ((upCount / pool.star6.length) * 100).toFixed(0) : 0;
       extraStats = `<span class="tag is-light is-rounded mr-2">不歪率: <strong>${winRate}%</strong></span>`;
@@ -441,6 +471,60 @@ export async function generateGachaRecord(
             }
           }
 
+          // Handle weapon pool up information
+          if (hasWeapon) {
+            const weaponPoolId = versionData.weaponPool!.poolId;
+
+            // Check if weapon pool info is already in database
+            const existingWeaponPool = await ctx.database.get(
+              'endfield_weapon_pools',
+              weaponPoolId
+            );
+
+            if (existingWeaponPool.length === 0) {
+              try {
+                // Fetch weapon pool info from API
+                const weaponPoolUrl = new URL('/api/endfield/gacha/pool-chars', cfg.apiBaseUrl);
+                const weaponPoolResponse = await axios.get(weaponPoolUrl.toString(), {
+                  params: {
+                    pool_id: weaponPoolId,
+                  },
+                  headers: {
+                    'X-API-KEY': cfg.apiKey,
+                  },
+                });
+
+                if (
+                  weaponPoolResponse.data.code === 0 &&
+                  weaponPoolResponse.data.data.pools.length > 0
+                ) {
+                  const weaponPoolData = weaponPoolResponse.data.data.pools[0];
+
+                  // Find up weapons (is_up: true)
+                  const upWeapons = weaponPoolData.star6_chars.filter((char: any) => char.is_up);
+
+                  // Prepare weapon pool data for database
+                  const weaponPoolRecord = {
+                    pool_id: weaponPoolId,
+                    pool_name: weaponPoolData.pool_name as string,
+                    up_weapons: upWeapons as Array<{
+                      char_id: string;
+                      name: string;
+                      cover: string;
+                      rarity: number;
+                      is_up: boolean;
+                    }>,
+                  };
+
+                  // Save to database
+                  await ctx.database.upsert('endfield_weapon_pools', [weaponPoolRecord]);
+                }
+              } catch (error) {
+                ctx.logger.error('Error fetching weapon pool info:', error);
+              }
+            }
+          }
+
           let dominantColor = '#ff3860';
           if (poolInfo) {
             const startDate = formatDate(poolInfo.pool_start_at_ts);
@@ -484,7 +568,7 @@ export async function generateGachaRecord(
         ? `
     <div class="divider" data-label="限定卡池"></div>
     <div class="columns is-multiline m-1">
-      ${specialPools.map(p => renderPoolCard(p)).join('')}
+      ${specialPools.map((p) => renderPoolCard(p)).join('')}
     </div>
     `
         : ''

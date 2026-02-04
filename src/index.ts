@@ -33,6 +33,17 @@ declare module 'koishi' {
       expires_at: Date;
     };
     endfield_char_pools_v2: CharPool;
+    endfield_weapon_pools: {
+      pool_id: string;
+      pool_name: string;
+      up_weapons: Array<{
+        char_id: string;
+        name: string;
+        cover: string;
+        rarity: number;
+        is_up: boolean;
+      }>;
+    };
   }
 }
 
@@ -69,6 +80,18 @@ export async function apply(ctx: Context, cfg: Config) {
     },
     {
       primary: 'id',
+    }
+  );
+
+  ctx.database.extend(
+    'endfield_weapon_pools',
+    {
+      pool_id: 'string',
+      pool_name: 'string',
+      up_weapons: 'json',
+    },
+    {
+      primary: 'pool_id',
     }
   );
 
