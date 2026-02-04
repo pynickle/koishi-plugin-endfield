@@ -1,4 +1,5 @@
 import { Config } from '../../config/config';
+import { parseCustomTime } from '../../utils/time-utils';
 import dayjs from 'dayjs';
 import { Context, Session } from 'koishi';
 
@@ -92,13 +93,12 @@ export async function endfieldStaminaSubscribe(
     }
 
     // Validate duration format (e.g., 3h, 3h30m30s)
-    const intervalRegex = /^\d+[hms]?(\d+[hms])*$/;
-    if (!intervalRegex.test(duration)) {
+    if (parseCustomTime(duration) === null) {
       return session.text('.invalidDuration');
     }
 
     // Validate reminder interval format (e.g., 1h, 2h)
-    if (!intervalRegex.test(reminder_interval)) {
+    if (parseCustomTime(reminder_interval) === null) {
       return session.text('.invalidReminderInterval');
     }
 

@@ -166,7 +166,7 @@ export async function apply(ctx: Context, cfg: Config) {
     .command('endfield.unsubscribe')
     .action(async ({ session }) => endfieldUnsubscribe(ctx, session, cfg));
   ctx
-    .command('endfield.stamina.subscribe <duration:text> [reminder_interval:text]')
+    .command('endfield.stamina.subscribe <duration:string> [reminder_interval:string]')
     .action(async ({ session }, duration, reminder_interval) =>
       endfieldStaminaSubscribe(ctx, session, cfg, duration, reminder_interval)
     );

@@ -1,4 +1,5 @@
 import { Config } from '../../config/config';
+import { parseCustomTime } from '../../utils/time-utils';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { Context, h } from 'koishi';
@@ -135,26 +136,6 @@ async function checkUserSubscriptions(
 }
 
 function parseIntervalToSeconds(interval: string): number {
-  const regex = /(\d+)([hms])/g;
-  let seconds = 0;
-  let match;
-
-  while ((match = regex.exec(interval)) !== null) {
-    const value = parseInt(match[1]);
-    const unit = match[2];
-
-    switch (unit) {
-      case 'h':
-        seconds += value * 3600;
-        break;
-      case 'm':
-        seconds += value * 60;
-        break;
-      case 's':
-        seconds += value;
-        break;
-    }
-  }
-
-  return seconds;
+  const ms = parseCustomTime(interval);
+  return ms ? ms / 1000 : 0;
 }
