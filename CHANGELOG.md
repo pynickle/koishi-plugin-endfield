@@ -1,3 +1,13 @@
+## [1.7.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.6.0...v1.7.0) (2026-02-04)
+
+### ✨ Features
+
+* add subscriptions for daily mission ([c8ff570](https://github.com/pynickle/koishi-plugin-endfield/commit/c8ff570fe1d94484e45caf44f28cb4c221a60070))
+
+### 🐛 Bug Fixes
+
+* remove unused import ([46bcc5c](https://github.com/pynickle/koishi-plugin-endfield/commit/46bcc5c0fcaead7f9dfe65c46fe65b04ffce5bfd))
+
 ## [1.6.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.5.0...v1.6.0) (2026-02-04)
 
 ### ✨ Features
