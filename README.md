@@ -1,0 +1,178 @@
+# koishi-plugin-endfield
+
+[![npm](https://img.shields.io/npm/v/koishi-plugin-endfield?style=flat-square)](https://www.npmjs.com/package/koishi-plugin-endfield)
+[![license](https://img.shields.io/github/license/pynickle/koishi-plugin-endfield?style=flat-square)](https://github.com/pynickle/koishi-plugin-endfield/blob/main/LICENSE)
+
+终末地 Endfield 插件 for Koishi，提供角色绑定、每日签到、角色详情卡片、抽卡记录查询等功能。
+
+## 功能特性
+
+- **用户绑定**：通过 Framework Token 共享实现用户绑定
+- **每日签到**：支持手动签到和自动签到
+- **角色详情**：获取角色详情卡片
+- **抽卡记录**：获取抽卡记录，支持分页，显示 up 角色和 up 武器
+- **自动任务**：
+  - 每日 00:01 自动签到
+  - 每日 12:00 自动更新角色池信息
+- **本地化支持**：全中文本地化
+
+## 安装
+
+### 方法一：通过 npm 安装
+
+```bash
+npm install koishi-plugin-endfield
+```
+
+### 方法二：通过 Koishi 插件市场安装
+
+在 Koishi 管理界面中，搜索 `endfield` 并安装。
+
+## 配置
+
+在 Koishi 管理界面中，找到 `endfield` 插件并配置以下选项：
+
+| 配置项          | 类型     | 说明                     |
+|--------------|--------|------------------------|
+| `apiKey`     | string | Endfield API 的 API Key |
+| `apiBaseUrl` | string | Endfield API 的基础 URL   |
+| `clientUrl`  | string | Endfield API 的客户端 URL  |
+| `adminQQ`    | string | 管理员 QQ 号，用于接收自动签到通知    |
+
+## 使用方法
+
+### 1. 用户绑定
+
+```
+endfield.auth
+```
+
+执行此命令后，会生成一个授权 URL，用户需要访问该 URL 进行授权，授权成功后会自动绑定用户信息。
+
+### 2. 每日签到
+
+```
+endfield.sign
+```
+
+执行此命令后，会尝试为当前用户进行签到，并返回签到结果。
+
+### 3. 获取角色详情
+
+```
+endfield.char <角色名称>
+```
+
+执行此命令后，会获取指定角色的详情卡片并发送。
+
+### 4. 获取抽卡记录
+
+```
+endfield.gacha
+endfield.gacha -n
+```
+
+- `endfield.gacha`：同步并获取抽卡记录
+- `endfield.gacha -n`：直接获取抽卡记录，不同步
+
+执行此命令后，会获取用户的抽卡记录，并生成一个包含抽卡统计和详情的 HTML 页面。
+
+## 技术实现
+
+- **API 调用**：使用 axios 进行 HTTP 请求
+- **数据存储**：使用 Koishi 数据库存储用户绑定信息和角色池信息
+- **定时任务**：使用 koishi-plugin-cron 实现定时任务
+- **页面渲染**：使用 koishi-plugin-puppeteer 渲染 HTML 页面
+- **颜色提取**：使用 colorthief 提取角色图片的主色调
+
+## 目录结构
+
+```
+src/
+├── config/           # 配置相关
+│   ├── locales/      # 本地化文件
+│   └── config.ts     # 配置定义
+├── core/             # 核心代码
+│   ├── commands/     # 命令实现
+│   ├── render/       # 页面渲染
+│   └── services/     # 服务实现
+├── locales/          # 本地化文件
+├── types/            # 类型定义
+├── utils/            # 工具函数
+└── index.ts          # 插件入口
+```
+
+## 命令说明
+
+### endfield.auth
+
+- **功能**：绑定用户账号
+- **参数**：无
+- **返回**：授权 URL 和绑定结果
+
+### endfield.sign
+
+- **功能**：执行签到
+- **参数**：无
+- **返回**：签到结果
+
+### endfield.char
+
+- **功能**：获取角色详情
+- **参数**：角色名称（必选）
+- **返回**：角色详情卡片
+
+### endfield.gacha
+
+- **功能**：获取抽卡记录
+- **参数**：
+  - `-n, --noSync`：不同步直接获取抽卡记录
+- **返回**：抽卡记录统计和详情
+
+## 自动任务
+
+### 自动签到
+
+- **时间**：每日 00:01
+- **功能**：为所有绑定的用户自动签到
+- **通知**：向管理员 QQ 发送签到统计信息
+
+### 角色池更新
+
+- **时间**：每日 12:00
+- **功能**：更新角色池信息
+
+## 抽卡记录渲染
+
+抽卡记录页面包含以下内容：
+
+- **全局统计**：总抽卡数、六星总数、平均出货率、UP 平均花费
+- **限定卡池**：按版本分组显示，包含角色池和武器池
+- **常驻卡池**：显示常驻武器申领和常驻/新手卡池
+- **UP 标识**：标记 up 角色和 up 武器
+- **不歪率**：显示角色池和武器池的不歪率
+
+## 依赖
+
+- koishi：Koishi 核心
+- axios：HTTP 客户端
+- koishi-plugin-cron：定时任务
+- koishi-plugin-puppeteer：页面渲染
+- colorthief：颜色提取
+
+## 许可证
+
+AGPL 3.0 License
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 致谢
+
+- [Koishi](https://koishi.chat/)：强大的 QQ 机器人框架
+- [Endfield API](https://end-api.shallow.ink/)：提供终末地相关 API
+
+## 更新日志
+
+详细的更新日志请查看 [CHANGELOG.md](CHANGELOG.md) 文件。
