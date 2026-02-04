@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.8...v1.5.0) (2026-02-04)
+
+### ✨ Features
+
+* support up for more pools ([92a4d6f](https://github.com/pynickle/koishi-plugin-endfield/commit/92a4d6fe02102ce711a6ecd1319cd64500ecfce7))
+
 ## [1.4.8](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.7...v1.4.8) (2026-02-04)
 
 ### 🚀 Improvements
