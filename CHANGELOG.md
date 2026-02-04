@@ -1,3 +1,9 @@
+## [1.8.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.8.1...v1.8.2) (2026-02-04)
+
+### 🐛 Bug Fixes
+
+* fix wrong locale id ([cd3a6e8](https://github.com/pynickle/koishi-plugin-endfield/commit/cd3a6e8d4eeb3a3aaf613a41a9fa19b3750639e7))
+
 ## [1.8.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.8.0...v1.8.1) (2026-02-04)
 
 ### 🐛 Bug Fixes
