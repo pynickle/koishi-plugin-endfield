@@ -1,6 +1,7 @@
 import { Config } from '../../config/config';
 import { createTextMsg } from '../../utils/cqcode-utils';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { Context, Session } from 'koishi';
 
 export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) {
@@ -33,7 +34,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
 
     const authText = session.text('.authUrl', {
       url: fullAuthUrl,
-      expiresAt: new Date(expires_at).toLocaleString(),
+      expiresAt: dayjs(expires_at).format('YYYY-MM-DD HH:mm:ss'),
     });
 
     let authUrlMsgId: string | number;
@@ -84,7 +85,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
                     framework_token: framework_token,
                     user_info: user_info,
                     binding_info: binding_info,
-                    expires_at: new Date(expires_at),
+                    expires_at: dayjs(expires_at).toDate(),
                   },
                 ]);
 

@@ -102,11 +102,6 @@ export async function generateGachaRecord(
     }
   };
 
-  const getPoolDominantColor = (poolId: string): string => {
-    const info = poolInfoList.find((p) => p.pool_id === poolId);
-    return info?.dominant_color || '#ff3860';
-  };
-
   // Process Pity and Distribution
   const poolPityCounter = new Map<string, number>();
 
@@ -140,6 +135,54 @@ export async function generateGachaRecord(
     categoryStats[pType].pulls++;
 
     if (rec.rarity === 6) {
+      if (extractVersion(pKey) && !pKey.startsWith('special')) {
+        // Check if weapon pool info is already in database
+        const existingWeaponPool = await ctx.database.get('endfield_weapon_pools', pKey);
+
+        if (existingWeaponPool.length === 0) {
+          try {
+            // Fetch weapon pool info from API
+            const weaponPoolUrl = new URL('/api/endfield/gacha/pool-chars', cfg.apiBaseUrl);
+            const weaponPoolResponse = await axios.get(weaponPoolUrl.toString(), {
+              params: {
+                pool_id: pKey,
+              },
+              headers: {
+                'X-API-KEY': cfg.apiKey,
+              },
+            });
+
+            if (
+              weaponPoolResponse.data.code === 0 &&
+              weaponPoolResponse.data.data.pools.length > 0
+            ) {
+              const weaponPoolData = weaponPoolResponse.data.data.pools[0];
+
+              // Find up weapons (is_up: true)
+              const upWeapons = weaponPoolData.star6_chars.filter((char: any) => char.is_up);
+
+              // Prepare weapon pool data for database
+              const weaponPoolRecord = {
+                pool_id: pKey,
+                pool_name: weaponPoolData.pool_name as string,
+                up_weapons: upWeapons as Array<{
+                  char_id: string;
+                  name: string;
+                  cover: string;
+                  rarity: number;
+                  is_up: boolean;
+                }>,
+              };
+
+              // Save to database
+              await ctx.database.upsert('endfield_weapon_pools', [weaponPoolRecord]);
+            }
+          } catch (error) {
+            ctx.logger.error('Error fetching weapon pool info:', error);
+          }
+        }
+      }
+
       const isUp =
         pType === 'special' || pType === 'weapon'
           ? isUpChar(rec.char_name, rec.pool_name, rec.pool_id) ||
@@ -319,13 +362,13 @@ export async function generateGachaRecord(
 
   return `
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bulma/1.0.4/css/bulma.min.css">
   <style>
-    body { max-width: 800px; margin: 0 auto; padding: 40px; background-color: #f5f7fa; font-family: 'maple mono nf cn', 'Segoe UI' }
+    body { max-width: 800px; margin: 0 auto; padding: 40px; background-color: #f5f7fa; font-family: 'maple mono nf cn', 'Segoe UI', serif }
     .stat-card { height: 100%; background: white; border-radius: 8px; padding: 1.25rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .divider { border-bottom: 2px solid #dbdbdb; margin: 2rem 0 1rem; position: relative; }
     .divider::after { content: attr(data-label); position: absolute; left: 0; bottom: 5px; background: #f5f7fa; padding-right: 10px; font-weight: bold; color: #b5b5b5; font-size: 0.85rem; }
@@ -390,7 +433,7 @@ export async function generateGachaRecord(
     <div class="divider" data-label="限定卡池"></div>
     <div class="columns is-multiline m-1">
       ${await Promise.all(
-        sortedVersions.map(async (versionData, index) => {
+        sortedVersions.map(async (versionData) => {
           const hasSpecial = !!versionData.specialPool;
           const hasWeapon = !!versionData.weaponPool;
 
@@ -468,60 +511,6 @@ export async function generateGachaRecord(
               }
             } catch (error) {
               ctx.logger.error('Error fetching pool info:', error);
-            }
-          }
-
-          // Handle weapon pool up information
-          if (hasWeapon) {
-            const weaponPoolId = versionData.weaponPool!.poolId;
-
-            // Check if weapon pool info is already in database
-            const existingWeaponPool = await ctx.database.get(
-              'endfield_weapon_pools',
-              weaponPoolId
-            );
-
-            if (existingWeaponPool.length === 0) {
-              try {
-                // Fetch weapon pool info from API
-                const weaponPoolUrl = new URL('/api/endfield/gacha/pool-chars', cfg.apiBaseUrl);
-                const weaponPoolResponse = await axios.get(weaponPoolUrl.toString(), {
-                  params: {
-                    pool_id: weaponPoolId,
-                  },
-                  headers: {
-                    'X-API-KEY': cfg.apiKey,
-                  },
-                });
-
-                if (
-                  weaponPoolResponse.data.code === 0 &&
-                  weaponPoolResponse.data.data.pools.length > 0
-                ) {
-                  const weaponPoolData = weaponPoolResponse.data.data.pools[0];
-
-                  // Find up weapons (is_up: true)
-                  const upWeapons = weaponPoolData.star6_chars.filter((char: any) => char.is_up);
-
-                  // Prepare weapon pool data for database
-                  const weaponPoolRecord = {
-                    pool_id: weaponPoolId,
-                    pool_name: weaponPoolData.pool_name as string,
-                    up_weapons: upWeapons as Array<{
-                      char_id: string;
-                      name: string;
-                      cover: string;
-                      rarity: number;
-                      is_up: boolean;
-                    }>,
-                  };
-
-                  // Save to database
-                  await ctx.database.upsert('endfield_weapon_pools', [weaponPoolRecord]);
-                }
-              } catch (error) {
-                ctx.logger.error('Error fetching weapon pool info:', error);
-              }
             }
           }
 

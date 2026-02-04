@@ -11,6 +11,7 @@ await build({
     '@pynickle/koishi-plugin-adapter-onebot',
     'axios',
     'colorthief',
+    'dayjs',
     'koishi-plugin-cron',
     'koishi-plugin-puppeteer',
   ],

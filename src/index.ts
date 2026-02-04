@@ -4,7 +4,12 @@ import { endfieldChar } from './core/commands/char';
 import { endfieldGacha } from './core/commands/gacha';
 import { endfieldSign } from './core/commands/sign';
 import { endfieldStamina } from './core/commands/stamina';
-import { endfieldSubscribe, endfieldUnsubscribe } from './core/commands/subscribe';
+import {
+  endfieldSubscribe,
+  endfieldUnsubscribe,
+  endfieldStaminaSubscribe,
+  endfieldStaminaUnsubscribe,
+} from './core/commands/subscribe';
 import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
 import { fetchAndSaveCharPools } from './core/services/char-pools';
@@ -53,6 +58,15 @@ declare module 'koishi' {
       time: string;
       created_at: string;
       updated_at: string;
+    };
+    endfield_stamina_subscriptions: {
+      user_id: string;
+      group_id: string;
+      duration: string;
+      reminder_interval: string;
+      created_at: string;
+      updated_at: string;
+      last_reminded_at: string;
     };
   }
 }
@@ -119,6 +133,22 @@ export async function apply(ctx: Context, cfg: Config) {
     }
   );
 
+  ctx.database.extend(
+    'endfield_stamina_subscriptions',
+    {
+      user_id: 'string',
+      group_id: 'string',
+      duration: 'string',
+      reminder_interval: 'string',
+      created_at: 'string',
+      updated_at: 'string',
+      last_reminded_at: 'string',
+    },
+    {
+      primary: 'user_id',
+    }
+  );
+
   ctx.command('endfield.auth').action(async ({ session }) => endfieldAuth(ctx, session, cfg));
   ctx.command('endfield.sign').action(async ({ session }) => endfieldSign(ctx, session, cfg));
   ctx
@@ -135,6 +165,14 @@ export async function apply(ctx: Context, cfg: Config) {
   ctx
     .command('endfield.unsubscribe')
     .action(async ({ session }) => endfieldUnsubscribe(ctx, session, cfg));
+  ctx
+    .command('endfield.stamina.subscribe <duration:text> [reminder_interval:text]')
+    .action(async ({ session }, duration, reminder_interval) =>
+      endfieldStaminaSubscribe(ctx, session, cfg, duration, reminder_interval)
+    );
+  ctx
+    .command('endfield.stamina.unsubscribe')
+    .action(async ({ session }) => endfieldStaminaUnsubscribe(ctx, session, cfg));
 
   // Setup auto sign task, run at 00:01 every day
   ctx.cron('1 0 * * *', async () => {

@@ -1,5 +1,6 @@
 import { Config } from '../../config/config';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { Context, Session } from 'koishi';
 
 export async function endfieldStamina(ctx: Context, session: Session, cfg: Config) {
@@ -33,8 +34,7 @@ export async function endfieldStamina(ctx: Context, session: Session, cfg: Confi
 
     // Convert maxTs to readable time
     const maxTs = parseInt(stamina.maxTs);
-    const fullTime = new Date(maxTs * 1000);
-    const formattedTime = `${fullTime.getFullYear()}-${String(fullTime.getMonth() + 1).padStart(2, '0')}-${String(fullTime.getDate()).padStart(2, '0')} ${String(fullTime.getHours()).padStart(2, '0')}:${String(fullTime.getMinutes()).padStart(2, '0')}`;
+    const formattedTime = dayjs.unix(maxTs).format('YYYY-MM-DD HH:mm');
 
     return session.text('.staminaSuccess', {
       name: role.name,
