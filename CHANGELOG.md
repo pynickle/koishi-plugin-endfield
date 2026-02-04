@@ -1,3 +1,9 @@
+## [1.4.8](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.7...v1.4.8) (2026-02-04)
+
+### 🚀 Improvements
+
+* remove all old db ([9dc05ee](https://github.com/pynickle/koishi-plugin-endfield/commit/9dc05ee3400b8f791428e84dfb58c7dd8423e08a))
+
 ## [1.4.7](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.6...v1.4.7) (2026-02-04)
 
 ### 🐛 Bug Fixes
