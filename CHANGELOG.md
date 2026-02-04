@@ -1,3 +1,13 @@
+## [1.8.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.8.0...v1.8.1) (2026-02-04)
+
+### 🐛 Bug Fixes
+
+* fix time parsing ([8c8efce](https://github.com/pynickle/koishi-plugin-endfield/commit/8c8efced90e30eb4a8801095a9c7090a72a560cf))
+
+### 💄 Style Improvements
+
+* fmt ([8256e73](https://github.com/pynickle/koishi-plugin-endfield/commit/8256e739eef09d1ae8caa25b51861f180232bd13))
+
 ## [1.8.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.7.0...v1.8.0) (2026-02-04)
 
 ### ✨ Features
