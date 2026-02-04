@@ -1,3 +1,9 @@
+## [1.8.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.8.2...v1.8.3) (2026-02-04)
+
+### 🚀 Improvements
+
+* remove different group notification ([0c2ac67](https://github.com/pynickle/koishi-plugin-endfield/commit/0c2ac67a5182f76071c23e3dc5cf39d9e205fcd3))
+
 ## [1.8.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.8.1...v1.8.2) (2026-02-04)
 
 ### 🐛 Bug Fixes
