@@ -1,3 +1,9 @@
+## [1.4.5](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.4...v1.4.5) (2026-02-04)
+
+### 🐛 Bug Fixes
+
+* temp extend old db ([b2b1122](https://github.com/pynickle/koishi-plugin-endfield/commit/b2b11221b8d91b5dad1b12c9014947152e7d5046))
+
 ## [1.4.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.4.3...v1.4.4) (2026-02-04)
 
 ### 🚀 Improvements
