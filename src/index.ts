@@ -32,7 +32,6 @@ declare module 'koishi' {
       };
       expires_at: Date;
     };
-    endfield_char_pools: CharPool;
     endfield_char_pools_v2: CharPool;
   }
 }
@@ -53,8 +52,6 @@ export async function apply(ctx: Context, cfg: Config) {
       primary: 'user_id',
     }
   );
-
-  await ctx.database.drop('endfield_char_pools');
 
   ctx.database.extend(
     'endfield_char_pools_v2',
