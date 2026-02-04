@@ -164,7 +164,7 @@ export async function endfieldStaminaUnsubscribe(ctx: Context, session: Session,
     }
 
     await ctx.database.remove('endfield_stamina_subscriptions', session.userId);
-    return session.text('.unsubscribeSuccessStamina');
+    return session.text('.unsubscribeSuccess');
   } catch (error) {
     ctx.logger.error('Endfield stamina unsubscribe error:', error);
     return session.text('endfield.networkError');
