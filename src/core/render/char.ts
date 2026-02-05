@@ -156,6 +156,9 @@ async function generateCharacterCard(cardData: any): Promise<string> {
         </div>
 
         <!-- Tactical Item -->
+        ${
+          d.tacticalItem
+            ? `
         <div>
           <div class="section-title">Tactical</div>
           <div class="is-flex is-align-items-center has-background-light p-2" style="border-radius:4px;">
@@ -168,6 +171,9 @@ async function generateCharacterCard(cardData: any): Promise<string> {
             <span class="is-size-7 has-text-weight-bold has-text-grey-dark">${d.tacticalItem.tacticalItemData.name}</span>
           </div>
         </div>
+        `
+            : ''
+        }
 
         <!-- Skills -->
         <div style="margin-top:auto;">  <!-- Push to bottom if space allows, or just stick here -->
