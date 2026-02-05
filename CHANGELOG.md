@@ -1,3 +1,10 @@
+## [1.8.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.8.3...v1.8.4) (2026-02-05)
+
+### 🐛 Bug Fixes
+
+* fix commands message wrong ([c9fc1a7](https://github.com/pynickle/koishi-plugin-endfield/commit/c9fc1a7801ca7d49e9d1e281e07d18eef1e13942))
+* fix if no tactical item wrong ([7fbf0db](https://github.com/pynickle/koishi-plugin-endfield/commit/7fbf0db970233c2d6e90a230a7f179d60662503b))
+
 ## [1.8.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.8.2...v1.8.3) (2026-02-04)
 
 ### 🚀 Improvements
