@@ -1,3 +1,9 @@
+## [1.9.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.9.0...v1.9.1) (2026-02-05)
+
+### 🚀 Improvements
+
+* improve annoucement image ([a37847a](https://github.com/pynickle/koishi-plugin-endfield/commit/a37847a1cbac5096be5e08e2c3d89f0697de971f))
+
 ## [1.9.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.8.4...v1.9.0) (2026-02-05)
 
 ### ✨ Features
