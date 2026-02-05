@@ -229,6 +229,10 @@ src/
 - koishi-plugin-puppeteer：页面渲染
 - colorthief：颜色提取
 
+## 第三方资源声明
+
+本项目使用了 [Lucide Icon](https://lucide.dev/) 图标库，其许可证为 [ISC License](https://lucide.dev/license)。
+
 ## 许可证
 
 AGPL 3.0 License
@@ -240,7 +244,7 @@ AGPL 3.0 License
 ## 致谢
 
 - [Koishi](https://koishi.chat/)：强大的 QQ 机器人框架
-- [Endfield API](https://end-api.shallow.ink/)：提供终末地相关 API
+- [Endfield API](https://end.shallow.ink/)：提供终末地相关 API
 
 ## 更新日志
 

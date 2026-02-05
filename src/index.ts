@@ -1,4 +1,5 @@
 import { Config } from './config/config';
+import { endfieldAnnouncement } from './core/commands/announcement';
 import { endfieldAuth } from './core/commands/auth';
 import { endfieldChar } from './core/commands/char';
 import { endfieldGacha } from './core/commands/gacha';
@@ -191,6 +192,9 @@ export async function apply(ctx: Context, cfg: Config) {
   ctx
     .command('endfield.stamina.unsubscribe')
     .action(async ({ session }) => endfieldStaminaUnsubscribe(ctx, session, cfg));
+  ctx
+    .command('endfield.announcement', { authority: 4 })
+    .action(async ({ session }) => endfieldAnnouncement(ctx, session, cfg));
 
   // Setup auto sign task, run at 00:01 every day
   ctx.cron('1 0 * * *', async () => {
