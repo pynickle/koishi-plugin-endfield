@@ -6,6 +6,7 @@ export interface Config {
   apiBaseUrl: string;
   clientUrl: string;
   adminQQ: string;
+  announcementGroups: string[];
 }
 
 export const Config: Schema<Config> = Schema.object({
@@ -13,6 +14,7 @@ export const Config: Schema<Config> = Schema.object({
   apiBaseUrl: Schema.string().default('https://end-api.shallow.ink/'),
   clientUrl: Schema.string().default('https://end.shallow.ink/'),
   adminQQ: Schema.string().required(),
+  announcementGroups: Schema.array(Schema.string()).default([]),
 }).i18n({
   'zh-CN': zhCN,
 });

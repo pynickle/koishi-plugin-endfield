@@ -12,6 +12,7 @@ import {
 } from './core/commands/subscribe';
 import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
+import { checkAnnouncements } from './core/services/announcements';
 import { fetchAndSaveCharPools } from './core/services/char-pools';
 import { autoSignAll } from './core/services/sign';
 import { checkSubscriptions } from './core/services/subscribe';
@@ -67,6 +68,11 @@ declare module 'koishi' {
       created_at: string;
       updated_at: string;
       last_reminded_at: string;
+    };
+    endfield_announcements: {
+      id: string;
+      last_announcement_id: string;
+      updated_at: string;
     };
   }
 }
@@ -149,6 +155,18 @@ export async function apply(ctx: Context, cfg: Config) {
     }
   );
 
+  ctx.database.extend(
+    'endfield_announcements',
+    {
+      id: 'string',
+      last_announcement_id: 'string',
+      updated_at: 'string',
+    },
+    {
+      primary: 'id',
+    }
+  );
+
   ctx.command('endfield.auth').action(async ({ session }) => endfieldAuth(ctx, session, cfg));
   ctx.command('endfield.sign').action(async ({ session }) => endfieldSign(ctx, session, cfg));
   ctx
@@ -191,4 +209,11 @@ export async function apply(ctx: Context, cfg: Config) {
   ctx.cron('* * * * *', async () => {
     await checkSubscriptions(ctx, cfg);
   });
+
+  // Check announcements every 3 minutes
+  ctx.cron('*/3 * * * *', async () => {
+    await checkAnnouncements(ctx, cfg);
+  });
+
+  await checkAnnouncements(ctx, cfg);
 }
