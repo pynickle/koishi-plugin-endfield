@@ -102,6 +102,16 @@
         "loginError": "登录过程中发生错误，请稍后重试",
         "gettingBindingInfo": "正在获取绑定信息，请稍候..."
       }
+    },
+    "endfield.setweaponup": {
+      "description": "设置武器池 UP 武器",
+      "messages": {
+        "apiError": "获取武器池信息失败：{message}",
+        "poolNotFound": "未找到卡池 {poolId}",
+        "weaponNotFound": "在卡池 {poolId} 中未找到武器 {weaponName}",
+        "success": "成功设置武器池 {poolId} ({poolName}) 的 UP 武器为 {weaponName}",
+        "error": "设置失败：{message}"
+      }
     }
   }
 }

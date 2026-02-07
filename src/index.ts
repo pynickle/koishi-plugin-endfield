@@ -4,6 +4,7 @@ import { endfieldAuth } from './core/commands/auth';
 import { endfieldChar } from './core/commands/char';
 import { endfieldGacha } from './core/commands/gacha';
 import { endfieldQr } from './core/commands/qr';
+import { endfieldSetWeaponUp } from './core/commands/setweaponup';
 import { endfieldSign } from './core/commands/sign';
 import { endfieldStamina } from './core/commands/stamina';
 import {
@@ -197,6 +198,11 @@ export async function apply(ctx: Context, cfg: Config) {
     .command('endfield.announcement', { authority: 4 })
     .action(async ({ session }) => endfieldAnnouncement(ctx, session, cfg));
   ctx.command('endfield.qr').action(async ({ session }) => endfieldQr(ctx, session, cfg));
+  ctx
+    .command('endfield.setweaponup <poolId> <weaponName>', { authority: 4 })
+    .action(async ({ session }, poolId, weaponName) =>
+      endfieldSetWeaponUp(ctx, session, cfg, poolId, weaponName)
+    );
 
   // Setup auto sign task, run at 00:01 every day
   ctx.cron('1 0 * * *', async () => {

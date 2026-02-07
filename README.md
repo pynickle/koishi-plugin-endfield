@@ -122,6 +122,17 @@ endfield.qr
 
 执行此命令后，会生成并发送登录二维码，用户扫描后完成登录，登录信息会自动保存到数据库中。
 
+### 9. 设置武器池 UP 武器
+
+```
+endfield.setweaponup <poolId> <weaponName>
+```
+
+- `poolId`：武器池 ID，例如 weaponbox_1_0_1
+- `weaponName`：武器名称，例如 熔铸火焰
+
+执行此命令后，会获取武器池信息，找到指定武器并设置为 UP 武器，然后保存到数据库中。
+
 ## 技术实现
 
 - **API 调用**：使用 axios 进行 HTTP 请求
