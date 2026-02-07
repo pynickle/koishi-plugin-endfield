@@ -102,13 +102,17 @@ export async function generateGachaRecord(
     }
   };
 
-  // Process Pity and Distribution
-  const poolPityCounter = new Map<string, number>();
+  const typePityCounters = {
+    special: 0,
+    weapon: 0,
+    standard: 0,
+    beginner: 0,
+  };
 
   for (const rec of records) {
     totalPulls++;
-
     if (rec.is_free) continue;
+
     const pKey = rec.pool_id;
     const pType = getPoolType(pKey);
 
@@ -123,22 +127,20 @@ export async function generateGachaRecord(
         star5Count: 0,
         poolId: pKey,
       });
-      poolPityCounter.set(pKey, 0);
     }
 
     const poolData = poolsMap.get(pKey)!;
-    const currentPity = poolPityCounter.get(pKey) + 1;
-
     poolData.total++;
 
-    // Global Category Stats
     categoryStats[pType].pulls++;
+
+    typePityCounters[pType]++;
+
+    const currentPityCount = typePityCounters[pType];
 
     if (rec.rarity === 6) {
       if (extractVersion(pKey) && !pKey.startsWith('special')) {
-        // Check if weapon pool info is already in database
         const existingWeaponPool = await ctx.database.get('endfield_weapon_pools', pKey);
-
         if (existingWeaponPool.length === 0) {
           try {
             // Fetch weapon pool info from API
@@ -191,7 +193,7 @@ export async function generateGachaRecord(
 
       poolData.star6.push({
         name: rec.char_name,
-        count: currentPity,
+        count: currentPityCount,
         isUp,
       });
 
@@ -199,28 +201,26 @@ export async function generateGachaRecord(
       categoryStats[pType].sixStar++;
       if (isUp) categoryStats[pType].upSixStar++;
 
-      poolPityCounter.set(pKey, 0);
-    } else {
-      poolPityCounter.set(pKey, currentPity);
+      typePityCounters[pType] = 0;
     }
 
-    // Update live pity in object
-    poolData.pity = poolPityCounter.get(pKey) || 0;
+    poolData.pity = typePityCounters[pType];
   }
 
-  for (const [pKey, pValue] of poolPityCounter) {
-    const pType = getPoolType(pKey);
-    categoryStats[pType].pity += pValue;
-  }
+  categoryStats.special.pity = typePityCounters.special;
+  categoryStats.weapon.pity = typePityCounters.weapon;
+  categoryStats.standard.pity = typePityCounters.standard;
+  categoryStats.beginner.pity = typePityCounters.beginner;
 
-  // Calculate Aggregates
+  const currentTotalPity =
+    typePityCounters.special +
+    typePityCounters.weapon +
+    typePityCounters.standard +
+    typePityCounters.beginner;
+
   const globalAvg =
-    total6Star > 0
-      ? (
-          (totalPulls - [...poolPityCounter.values()].reduce((sum, v) => sum + v, 0)) /
-          total6Star
-        ).toFixed(1)
-      : '0';
+    total6Star > 0 ? ((totalPulls - currentTotalPity) / total6Star).toFixed(1) : '0';
+
   const specialAvgUp =
     categoryStats.special.upSixStar > 0
       ? (
@@ -230,15 +230,15 @@ export async function generateGachaRecord(
       : categoryStats.special.sixStar > 0
         ? 'N/A'
         : '-';
+
   const weaponAvg =
     categoryStats.weapon.sixStar > 0
       ? (
-          categoryStats.weapon.pulls -
-          categoryStats.weapon.pity / categoryStats.weapon.sixStar
+          (categoryStats.weapon.pulls - categoryStats.weapon.pity) /
+          categoryStats.weapon.sixStar
         ).toFixed(1)
       : '-';
 
-  // Luck evaluation colors
   const getLuckColor = (val: number, benchmark: number) => {
     if (val === 0) return '';
     if (val < benchmark * 0.8) return 'has-text-success-dark';
@@ -252,11 +252,10 @@ export async function generateGachaRecord(
     return 'has-text-success';
   };
 
-  // Render Functions
   const renderPoolCard = (pool: ProcessedPool, color?: string) => {
     const reversedHistory = [...pool.star6].reverse();
-    const avg =
-      pool.star6.length > 0 ? ((pool.total - pool.pity) / pool.star6.length).toFixed(1) : '-';
+
+    const avg = pool.star6.length > 0 ? (pool.total / pool.star6.length).toFixed(1) : '-';
 
     // Stats Line
     let extraStats = '';
@@ -278,17 +277,15 @@ export async function generateGachaRecord(
             </div>
             <div class="level-item ml-4">
               <div>
-                <p class="heading has-text-grey">当前垫刀</p>
-                <p class="title is-4 ${getPityColor(pool.pity)}">${pool.pity}</p>
+                <p class="heading has-text-grey">结束时垫刀</p> <p class="title is-4 ${getPityColor(pool.pity)}">${pool.pity}</p>
               </div>
             </div>
           </div>
           <div class="level-right has-text-right">
              <div>
-                <p class="heading has-text-grey">总抽/金数</p>
+                <p class="heading has-text-grey">本池投入/金数</p>
                 <span class="tag is-white is-medium"><strong>${pool.total}</strong> 抽</span>
                 <span class="tag is-warning is-light is-medium"><strong>${pool.star6.length}</strong> 金</span>
-                <span class="tag is-light is-medium">Avg: ${avg}</span>
              </div>
           </div>
         </nav>
@@ -298,7 +295,7 @@ export async function generateGachaRecord(
         </div>
 
         <div class="field is-grouped is-grouped-multiline">
-          ${reversedHistory.length === 0 ? '<span class="has-text-grey-light is-size-7 is-italic">暂无六星记录</span>' : ''}
+          ${reversedHistory.length === 0 ? '<span class="has-text-grey-light is-size-7 is-italic">本池无六星产出</span>' : ''}
           ${reversedHistory
             .map(
               (s, idx) => `
@@ -442,7 +439,7 @@ export async function generateGachaRecord(
           // Process version string
           const versionParts = versionData.version.split('_').map(Number);
           const verString = `VER ${versionParts[0]}.${versionParts[1]}`;
-          const upString = `UP ${versionParts[2]}`;
+          const upString = `UP ${(versionParts[2] + 1) / 2}`;
 
           // Get pool info for date range
           let dateRange = '202X.XX.XX - 202X.XX.XX';
