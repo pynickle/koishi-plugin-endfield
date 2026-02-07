@@ -119,6 +119,7 @@ async function generateCharacterCard(cardData: any): Promise<string> {
           <div class="tags">
             <span class="tag is-black is-radiusless">${d.charData.profession.value}</span>
             <span class="tag is-warning is-radiusless has-text-weight-bold">Lv.${d.level}</span>
+            <span class="tag is-info is-radiusless has-text-weight-semibold">潜能 ${d.potentialLevel}</span>
           </div>
         </div>
       </div>

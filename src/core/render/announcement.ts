@@ -167,6 +167,5 @@ export async function renderAnnouncement(ctx: Context, announcement: any): Promi
   const { puppeteer } = ctx;
 
   const html = generateAnnouncement(announcement);
-  ctx.logger.info(html);
   return puppeteer.render(html);
 }
