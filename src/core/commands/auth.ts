@@ -43,6 +43,10 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
 
         if (pollingAttempts > POLLING_CONFIG.AUTH_MAX_ATTEMPTS) {
           clearInterval(pollingInterval);
+          if (session.onebot) {
+            await session.onebot.deleteMsg(authUrlMsgId);
+          }
+          resolve(session.text('.authExpiredError'));
           return;
         }
 
@@ -84,6 +88,9 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
             resolve(session.text('.authRejectedError'));
           } else if (status === AUTH_STATUS.EXPIRED) {
             clearInterval(pollingInterval);
+            if (session.onebot) {
+              await session.onebot.deleteMsg(authUrlMsgId);
+            }
             resolve(session.text('.authExpiredError'));
           }
         } catch (error) {

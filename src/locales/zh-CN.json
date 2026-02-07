@@ -38,7 +38,8 @@
         "syncTaskError": "启动同步任务失败：{message}",
         "syncTimeout": "同步超时，请稍后重试",
         "recordsError": "获取抽卡记录失败：{message}",
-        "syncFailed": "同步抽卡记录失败：{message}"
+        "syncFailed": "同步抽卡记录失败：{message}",
+        "noRecordsFound": "未找到抽卡记录，正在自动同步..."
       }
     },
     "endfield.stamina": {
