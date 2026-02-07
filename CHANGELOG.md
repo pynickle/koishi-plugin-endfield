@@ -1,3 +1,9 @@
+## [1.12.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.1...v1.12.2) (2026-02-07)
+
+### 🚀 Improvements
+
+* make check subscriptions slower ([b0c196b](https://github.com/pynickle/koishi-plugin-endfield/commit/b0c196b693a430759902fc3c178f7b98a17d0d0c))
+
 ## [1.12.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.0...v1.12.1) (2026-02-07)
 
 ### ♻️ Code Refactoring
