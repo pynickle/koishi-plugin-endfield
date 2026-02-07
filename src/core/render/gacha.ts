@@ -102,12 +102,17 @@ export async function generateGachaRecord(
     }
   };
 
+  // Process Pity and Distribution
+  // Global counters for inheriting pools (Special Char, Standard, Weapon Constant, Beginner)
   const typePityCounters = {
-    special: 0,
+    special: 0, // Now strictly for Special Characters
     weapon: 0,
     standard: 0,
     beginner: 0,
   };
+
+  // Map to track pity for non-inheriting pools (Limited Weapons)
+  const poolLocalPity = new Map<string, number>();
 
   for (const rec of records) {
     totalPulls++;
@@ -115,6 +120,11 @@ export async function generateGachaRecord(
 
     const pKey = rec.pool_id;
     const pType = getPoolType(pKey);
+
+    // Identify if this is a Limited Weapon Pool (starts with weaponbox/weponbox but fell into 'special' type)
+    // 'weaponbox_constant' is already handled as 'weapon' type by getPoolType, so we don't need to exclude it here explicitly if checking pType === 'special'
+    const isLimitedWeapon =
+      pType === 'special' && (pKey.startsWith('weaponbox') || pKey.startsWith('weponbox'));
 
     if (!poolsMap.has(pKey)) {
       poolsMap.set(pKey, {
@@ -127,16 +137,31 @@ export async function generateGachaRecord(
         star5Count: 0,
         poolId: pKey,
       });
+      // Initialize local pity for this specific pool
+      if (isLimitedWeapon) {
+        poolLocalPity.set(pKey, 0);
+      }
     }
 
     const poolData = poolsMap.get(pKey)!;
     poolData.total++;
 
+    // Global Category Stats (Shared for both char and weapon special)
     categoryStats[pType].pulls++;
 
-    typePityCounters[pType]++;
+    // Pity Calculation Logic
+    let currentPityCount = 0;
 
-    const currentPityCount = typePityCounters[pType];
+    if (isLimitedWeapon) {
+      // Local Pity Logic (No Inheritance)
+      const currentVal = poolLocalPity.get(pKey) || 0;
+      currentPityCount = currentVal + 1;
+      poolLocalPity.set(pKey, currentPityCount);
+    } else {
+      // Global Pity Logic (Inheritance)
+      typePityCounters[pType]++;
+      currentPityCount = typePityCounters[pType];
+    }
 
     if (rec.rarity === 6) {
       if (extractVersion(pKey) && !pKey.startsWith('special')) {
@@ -201,12 +226,21 @@ export async function generateGachaRecord(
       categoryStats[pType].sixStar++;
       if (isUp) categoryStats[pType].upSixStar++;
 
+      // Reset Logic
+      if (isLimitedWeapon) {
+        poolLocalPity.set(pKey, 0);
+      } else {
+        typePityCounters[pType] = 0;
+      }
+
       typePityCounters[pType] = 0;
     }
 
-    poolData.pity = typePityCounters[pType];
+    poolData.pity = isLimitedWeapon ? poolLocalPity.get(pKey) || 0 : typePityCounters[pType];
   }
 
+  // Update global stats display
+  // NOTE: 'special' category pity now reflects ONLY the Character Banner water level
   categoryStats.special.pity = typePityCounters.special;
   categoryStats.weapon.pity = typePityCounters.weapon;
   categoryStats.standard.pity = typePityCounters.standard;
