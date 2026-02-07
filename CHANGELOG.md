@@ -1,3 +1,9 @@
+## [1.10.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.9.1...v1.10.0) (2026-02-07)
+
+### ✨ Features
+
+* add char potential level ([f8f79ee](https://github.com/pynickle/koishi-plugin-endfield/commit/f8f79eebe7473f2027ea74aecac6dfbbe76b02b7))
+
 ## [1.9.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.9.0...v1.9.1) (2026-02-05)
 
 ### 🚀 Improvements
