@@ -85,6 +85,23 @@
         "announcementError": "获取公告失败：{message}",
         "announcementNotFound": "未找到最新公告"
       }
+    },
+    "endfield.qr": {
+      "description": "扫码登录",
+      "messages": {
+        "qrError": "获取二维码失败：{message}",
+        "qrInvalidData": "获取二维码数据无效",
+        "scanPrompt": "请扫描以下二维码登录：",
+        "expirePrompt": "二维码有效期至：{expireTime}",
+        "statusError": "获取扫码状态失败：{message}",
+        "confirmError": "确认登录失败：{message}",
+        "bindingError": "获取绑定信息失败：{message}",
+        "noBindingInfo": "未找到绑定信息",
+        "loginSuccess": "登录成功！\n角色名：{roleName} (UID: {roleId})",
+        "qrExpired": "二维码已过期，请重新生成",
+        "loginError": "登录过程中发生错误，请稍后重试",
+        "gettingBindingInfo": "正在获取绑定信息，请稍候..."
+      }
     }
   }
 }

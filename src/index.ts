@@ -3,6 +3,7 @@ import { endfieldAnnouncement } from './core/commands/announcement';
 import { endfieldAuth } from './core/commands/auth';
 import { endfieldChar } from './core/commands/char';
 import { endfieldGacha } from './core/commands/gacha';
+import { endfieldQr } from './core/commands/qr';
 import { endfieldSign } from './core/commands/sign';
 import { endfieldStamina } from './core/commands/stamina';
 import {
@@ -33,10 +34,10 @@ declare module 'koishi' {
       framework_token: string;
       user_info: {
         nickname: string;
-        avatar: string;
       };
       binding_info: {
         role_id: string;
+        server_id: string;
         nickname: string;
         level: number;
       };
@@ -195,6 +196,7 @@ export async function apply(ctx: Context, cfg: Config) {
   ctx
     .command('endfield.announcement', { authority: 4 })
     .action(async ({ session }) => endfieldAnnouncement(ctx, session, cfg));
+  ctx.command('endfield.qr').action(async ({ session }) => endfieldQr(ctx, session, cfg));
 
   // Setup auto sign task, run at 00:01 every day
   ctx.cron('1 0 * * *', async () => {
