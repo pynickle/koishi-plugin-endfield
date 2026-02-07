@@ -252,10 +252,8 @@ export async function generateGachaRecord(
     return 'has-text-success';
   };
 
-  const renderPoolCard = (pool: ProcessedPool, color?: string) => {
+  const renderPoolCard = (pool: ProcessedPool, color?: string, pityLabel: string = '当前垫刀') => {
     const reversedHistory = [...pool.star6].reverse();
-
-    const avg = pool.star6.length > 0 ? (pool.total / pool.star6.length).toFixed(1) : '-';
 
     // Stats Line
     let extraStats = '';
@@ -277,7 +275,7 @@ export async function generateGachaRecord(
             </div>
             <div class="level-item ml-4">
               <div>
-                <p class="heading has-text-grey">结束时垫刀</p> <p class="title is-4 ${getPityColor(pool.pity)}">${pool.pity}</p>
+                <p class="heading has-text-grey">${pityLabel}</p> <p class="title is-4 ${getPityColor(pool.pity)}">${pool.pity}</p>
               </div>
             </div>
           </div>
@@ -430,11 +428,13 @@ export async function generateGachaRecord(
     <div class="divider" data-label="限定卡池"></div>
     <div class="columns is-multiline m-1">
       ${await Promise.all(
-        sortedVersions.map(async (versionData) => {
+        sortedVersions.map(async (versionData, index) => {
           const hasSpecial = !!versionData.specialPool;
           const hasWeapon = !!versionData.weaponPool;
 
           if (!hasSpecial && !hasWeapon) return '';
+
+          const pityText = index === 0 ? '当前垫刀' : '结算垫刀';
 
           // Process version string
           const versionParts = versionData.version.split('_').map(Number);
@@ -521,8 +521,10 @@ export async function generateGachaRecord(
           }
 
           const content = [];
-          if (hasSpecial) content.push(renderPoolCard(versionData.specialPool!, dominantColor));
-          if (hasWeapon) content.push(renderPoolCard(versionData.weaponPool!, dominantColor));
+          if (hasSpecial)
+            content.push(renderPoolCard(versionData.specialPool!, dominantColor, pityText));
+          if (hasWeapon)
+            content.push(renderPoolCard(versionData.weaponPool!, dominantColor, pityText));
 
           const result = content.join('');
 
@@ -554,7 +556,7 @@ export async function generateGachaRecord(
         ? `
     <div class="divider" data-label="限定卡池"></div>
     <div class="columns is-multiline m-1">
-      ${specialPools.map((p) => renderPoolCard(p)).join('')}
+      ${specialPools.map((p) => renderPoolCard(p, undefined, '结算垫刀')).join('')}
     </div>
     `
         : ''
