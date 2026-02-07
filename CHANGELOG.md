@@ -1,3 +1,9 @@
+## [1.12.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.11.0...v1.12.0) (2026-02-07)
+
+### ✨ Features
+
+* add setweaponup ([2785516](https://github.com/pynickle/koishi-plugin-endfield/commit/2785516fd30a870dabdac32306e57c54cd0b1c02))
+
 ## [1.11.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.10.3...v1.11.0) (2026-02-07)
 
 ### ✨ Features
