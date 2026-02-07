@@ -1,3 +1,13 @@
+## [1.10.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.10.0...v1.10.1) (2026-02-07)
+
+### 🐛 Bug Fixes
+
+* optimize interface data display ([c35cd36](https://github.com/pynickle/koishi-plugin-endfield/commit/c35cd368109c68651e0db0cc98e8361fb3acf870))
+
+### 🚀 Improvements
+
+* increase the frequency of obtaining information about the wiki's operator card pools. ([b72f2ac](https://github.com/pynickle/koishi-plugin-endfield/commit/b72f2acf9e2aeb337ee3c4f5897aa79f3c1e02c4))
+
 ## [1.10.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.9.1...v1.10.0) (2026-02-07)
 
 ### ✨ Features
