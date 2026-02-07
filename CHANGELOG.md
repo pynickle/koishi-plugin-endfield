@@ -1,3 +1,9 @@
+## [1.12.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.2...v1.12.3) (2026-02-07)
+
+### 🚀 Improvements
+
+* nosync with no record automatically sync ([745f02f](https://github.com/pynickle/koishi-plugin-endfield/commit/745f02fccab50f2537c5f6311a9c10322183a474))
+
 ## [1.12.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.1...v1.12.2) (2026-02-07)
 
 ### 🚀 Improvements
