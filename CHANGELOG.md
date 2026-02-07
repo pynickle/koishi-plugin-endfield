@@ -1,3 +1,9 @@
+## [1.11.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.10.3...v1.11.0) (2026-02-07)
+
+### ✨ Features
+
+* add qr login ([8f74e3e](https://github.com/pynickle/koishi-plugin-endfield/commit/8f74e3e55066ec584e17ccd9de431ac4692024fd))
+
 ## [1.10.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.10.2...v1.10.3) (2026-02-07)
 
 ### 🐛 Bug Fixes
