@@ -202,7 +202,7 @@ export async function apply(ctx: Context, cfg: Config) {
   });
 
   // Setup char pools fetch cron job, run at 12:00 every day
-  ctx.cron('0 12 * * *', async () => {
+  ctx.cron('0 */3 * * *', async () => {
     await fetchAndSaveCharPools(ctx, cfg);
   });
 
