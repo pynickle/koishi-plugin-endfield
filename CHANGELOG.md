@@ -1,3 +1,9 @@
+## [1.10.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.10.2...v1.10.3) (2026-02-07)
+
+### 🐛 Bug Fixes
+
+* fix special weapon box pity rule ([4465ae3](https://github.com/pynickle/koishi-plugin-endfield/commit/4465ae3af776c6a24fad2d03052380b3d3b049b9))
+
 ## [1.10.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.10.1...v1.10.2) (2026-02-07)
 
 ### 🚀 Improvements
