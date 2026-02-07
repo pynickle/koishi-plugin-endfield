@@ -15,7 +15,7 @@ export const POLLING_CONFIG = {
 export const CRON_SCHEDULES = {
   AUTO_SIGN: '1 0 * * *',
   FETCH_CHAR_POOLS: '0 */3 * * *',
-  CHECK_SUBSCRIPTIONS: '* * * * *',
+  CHECK_SUBSCRIPTIONS: '*/2 * * * *',
   CHECK_ANNOUNCEMENTS: '*/3 * * * *',
 } as const;
 
