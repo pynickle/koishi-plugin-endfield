@@ -1,32 +1,28 @@
 import { Config } from '../../config/config';
+import { AnnouncementApi, createApiClient } from '../api';
+import { handleError, ApiError, NotFoundError, NetworkError } from '../errors';
 import { renderAnnouncement } from '../render/announcement';
-import axios from 'axios';
 import { Context, Session } from 'koishi';
 
 export async function endfieldAnnouncement(ctx: Context, session: Session, cfg: Config) {
   try {
-    // Get latest announcement from API
-    const announcementUrl = new URL('/api/announcements/latest', cfg.apiBaseUrl);
-    const announcementResponse = await axios.get(announcementUrl.toString(), {
-      headers: {
-        'X-API-KEY': cfg.apiKey,
-      },
-    });
+    const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
+    const announcementApi = new AnnouncementApi(api);
 
-    const announcementData = announcementResponse.data;
-    if (announcementData.code !== 0) {
+    const announcement = await announcementApi.getLatest();
+
+    return renderAnnouncement(ctx, announcement);
+  } catch (error) {
+    if (error instanceof ApiError) {
       return session.text('.announcementError', {
-        message: announcementData.message,
+        message: error.message,
       });
     }
 
-    const announcement = announcementData.data;
-    if (!announcement) {
+    if (error instanceof NotFoundError) {
       return session.text('.announcementNotFound');
     }
-    // Send announcement
-    return renderAnnouncement(ctx, announcement);
-  } catch (error) {
+
     ctx.logger.error('Endfield announcement error:', error);
     return session.text('endfield.networkError');
   }

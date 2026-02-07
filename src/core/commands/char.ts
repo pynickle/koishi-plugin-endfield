@@ -1,6 +1,6 @@
 import { Config } from '../../config/config';
+import { CharacterApi, createApiClient } from '../api';
 import { renderCharacterCard } from '../render/char';
-import axios from 'axios';
 import { Context, Session } from 'koishi';
 
 export async function endfieldChar(ctx: Context, session: Session, cfg: Config, charName: string) {
@@ -14,23 +14,12 @@ export async function endfieldChar(ctx: Context, session: Session, cfg: Config, 
     const binding = bindings[0];
     const frameworkToken = binding.framework_token;
 
-    const noteUrl = new URL('/api/endfield/note', cfg.apiBaseUrl);
-    const noteResponse = await axios.get(noteUrl.toString(), {
-      headers: {
-        'X-Framework-Token': frameworkToken,
-        'X-API-KEY': cfg.apiKey,
-      },
-    });
+    const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
+    const characterApi = new CharacterApi(api);
 
-    const noteData = noteResponse.data;
+    const noteData = await characterApi.getNote(frameworkToken);
 
-    if (noteData.code !== 0) {
-      return session.text('.noteError', {
-        message: noteData.message,
-      });
-    }
-
-    const targetChar = noteData.data.chars.find((char: any) => char.name === charName);
+    const targetChar = noteData.chars.find((char) => char.name === charName);
 
     if (!targetChar) {
       return session.text('.charNotFound', {
@@ -40,26 +29,9 @@ export async function endfieldChar(ctx: Context, session: Session, cfg: Config, 
 
     const instId = targetChar.id;
 
-    const cardUrl = new URL('/api/endfield/card/char', cfg.apiBaseUrl);
-    const cardResponse = await axios.get(cardUrl.toString(), {
-      params: {
-        instId: instId,
-      },
-      headers: {
-        'X-Framework-Token': frameworkToken,
-        'X-API-KEY': cfg.apiKey,
-      },
-    });
+    const cardData = await characterApi.getCard(instId, frameworkToken);
 
-    const cardData = cardResponse.data;
-
-    if (cardData.code !== 0) {
-      return session.text('.cardError', {
-        message: cardData.message,
-      });
-    }
-
-    return renderCharacterCard(ctx, cardData.data);
+    return renderCharacterCard(ctx, cardData);
   } catch (error) {
     ctx.logger.error('Endfield card error:', error);
     return session.text('endfield.networkError');

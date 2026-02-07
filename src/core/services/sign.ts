@@ -1,19 +1,7 @@
 import { Config } from '../../config/config';
-import axios from 'axios';
+import type { SignResult, AutoSignStats } from '../../types';
+import { SignApi, createApiClient } from '../api';
 import { Context } from 'koishi';
-
-interface SignResult {
-  success: boolean;
-  message: string;
-  awards?: string;
-}
-
-interface AutoSignStats {
-  total: number;
-  success: number;
-  failed: number;
-  failedUsers: Array<{ userId: string; message: string }>;
-}
 
 export async function signUser(ctx: Context, userId: string, cfg: Config): Promise<SignResult> {
   try {
@@ -29,37 +17,21 @@ export async function signUser(ctx: Context, userId: string, cfg: Config): Promi
     const binding = bindings[0];
     const frameworkToken = binding.framework_token;
 
-    const signUrl = new URL('/api/endfield/attendance', cfg.apiBaseUrl);
-    const signResponse = await axios.post(
-      signUrl.toString(),
-      {},
-      {
-        headers: {
-          'X-Framework-Token': frameworkToken,
-          'X-API-KEY': cfg.apiKey,
-        },
-      }
-    );
+    const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
+    const signApi = new SignApi(api);
 
-    const signData = signResponse.data;
+    const signData = await signApi.sign(frameworkToken);
 
-    if (signData.code !== 0) {
-      return {
-        success: false,
-        message: signData.message || '签到失败',
-      };
-    }
-
-    if (signData.data.already_signed) {
+    if (signData.already_signed) {
       return {
         success: false,
         message: '今日已签到',
       };
     }
 
-    const awards = signData.data.awardIds
-      .map((award: any) => {
-        const resourceInfo = signData.data.resourceInfoMap[award.id];
+    const awards = signData.awardIds
+      .map((award) => {
+        const resourceInfo = signData.resourceInfoMap[award.id];
         return `${resourceInfo.name} x${resourceInfo.count}`;
       })
       .join('、');
@@ -104,7 +76,6 @@ export async function autoSignAll(ctx: Context, cfg: Config): Promise<void> {
       }
     }
 
-    // Prepare stats message
     let message = `Endfield 自动签到统计：\n`;
     message += `总用户数：${stats.total}\n`;
     message += `成功：${stats.success}\n`;
@@ -117,7 +88,6 @@ export async function autoSignAll(ctx: Context, cfg: Config): Promise<void> {
       });
     }
 
-    // Send message to admin QQ
     try {
       await ctx.bots[0].sendPrivateMessage(cfg.adminQQ, message);
     } catch (error) {

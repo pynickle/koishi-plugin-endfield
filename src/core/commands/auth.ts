@@ -1,35 +1,23 @@
 import { Config } from '../../config/config';
+import { AUTH_CONFIG, POLLING_CONFIG, AUTH_STATUS } from '../../constants';
 import { createTextMsg } from '../../utils/cqcode-utils';
-import axios from 'axios';
+import { AuthApi, createApiClient } from '../api';
 import dayjs from 'dayjs';
 import { Context, Session } from 'koishi';
 
 export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) {
   try {
-    const createRequestUrl = new URL('/api/v1/authorization/requests', cfg.apiBaseUrl);
-    const createRequestResponse = await axios.post(
-      createRequestUrl.toString(),
-      {
-        client_id: 'yuan-bot',
-        client_name: 'Yuan Bot',
-        client_type: 'bot',
-        scopes: ['user_info', 'binding_info'],
-      },
-      {
-        headers: {
-          'X-API-Key': cfg.apiKey,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
+    const authApi = new AuthApi(api);
 
-    const createRequestData = createRequestResponse.data;
+    const authRequest = await authApi.createRequest({
+      client_id: AUTH_CONFIG.CLIENT_ID,
+      client_name: AUTH_CONFIG.CLIENT_NAME,
+      client_type: AUTH_CONFIG.CLIENT_TYPE,
+      scopes: AUTH_CONFIG.SCOPES,
+    });
 
-    if (createRequestData.code !== 0) {
-      return session.text('.authRequestError');
-    }
-
-    const { request_id, auth_url, expires_at } = createRequestData.data;
+    const { request_id, auth_url, expires_at } = authRequest;
     const fullAuthUrl = new URL(auth_url, cfg.clientUrl).toString();
 
     const authText = session.text('.authUrl', {
@@ -46,75 +34,62 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
       await session.send(authText);
     }
 
-    let pollingInterval;
+    let pollingInterval: string | number | NodeJS.Timeout;
     let pollingAttempts = 0;
-    const maxAttempts = 75;
 
     return new Promise<string>((resolve) => {
       pollingInterval = setInterval(async () => {
         pollingAttempts++;
 
-        if (pollingAttempts > maxAttempts) {
+        if (pollingAttempts > POLLING_CONFIG.AUTH_MAX_ATTEMPTS) {
           clearInterval(pollingInterval);
           return;
         }
 
         try {
-          const statusUrl = new URL(
-            `/api/v1/authorization/requests/${request_id}/status`,
-            cfg.apiBaseUrl
-          );
-          const statusResponse = await axios.get(statusUrl.toString(), {
-            headers: {
-              'X-API-Key': cfg.apiKey,
-            },
-          });
+          const statusData = await authApi.getStatus(request_id);
 
-          const statusData = statusResponse.data;
+          const { status, framework_token, user_info, binding_info } = statusData;
 
-          if (statusData.code === 0) {
-            const { status, framework_token, user_info, binding_info } = statusData.data;
+          if (status === AUTH_STATUS.APPROVED || status === AUTH_STATUS.USED) {
+            clearInterval(pollingInterval);
 
-            if (status === 'approved' || status === 'used') {
-              clearInterval(pollingInterval);
+            try {
+              await ctx.database.upsert('endfield_bindings_v3', [
+                {
+                  user_id: session.userId,
+                  framework_token: framework_token,
+                  user_info: user_info,
+                  binding_info: binding_info,
+                  expires_at: dayjs(expires_at).toDate(),
+                },
+              ]);
 
-              try {
-                await ctx.database.upsert('endfield_bindings_v3', [
-                  {
-                    user_id: session.userId,
-                    framework_token: framework_token,
-                    user_info: user_info,
-                    binding_info: binding_info,
-                    expires_at: dayjs(expires_at).toDate(),
-                  },
-                ]);
-
-                if (session.onebot) {
-                  await session.onebot.deleteMsg(authUrlMsgId);
-                }
-
-                const successText = session.text('.authSuccess', {
-                  userNickname: user_info.nickname,
-                  roleNickname: binding_info.nickname,
-                  roleId: binding_info.role_id,
-                });
-                resolve(successText);
-              } catch (error) {
-                ctx.logger.error('Endfield bind error:', error);
-                resolve(session.text('endfield.networkError'));
+              if (session.onebot) {
+                await session.onebot.deleteMsg(authUrlMsgId);
               }
-            } else if (status === 'rejected') {
-              clearInterval(pollingInterval);
-              resolve(session.text('.authRejectedError'));
-            } else if (status === 'expired') {
-              clearInterval(pollingInterval);
-              resolve(session.text('.authExpiredError'));
+
+              const successText = session.text('.authSuccess', {
+                userNickname: user_info.nickname,
+                roleNickname: binding_info.nickname,
+                roleId: binding_info.role_id,
+              });
+              resolve(successText);
+            } catch (error) {
+              ctx.logger.error('Endfield bind error:', error);
+              resolve(session.text('endfield.networkError'));
             }
+          } else if (status === AUTH_STATUS.REJECTED) {
+            clearInterval(pollingInterval);
+            resolve(session.text('.authRejectedError'));
+          } else if (status === AUTH_STATUS.EXPIRED) {
+            clearInterval(pollingInterval);
+            resolve(session.text('.authExpiredError'));
           }
         } catch (error) {
           ctx.logger.error('Polling error:', error);
         }
-      }, 3000);
+      }, POLLING_CONFIG.AUTH_POLLING_INTERVAL);
     });
   } catch (error) {
     ctx.logger.error('Endfield bind error:', error);
