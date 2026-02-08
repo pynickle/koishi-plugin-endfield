@@ -1,5 +1,5 @@
 import { Config } from '../../config/config';
-import axios from 'axios';
+import { GachaApi, createApiClient } from '../api';
 import { Context } from 'koishi';
 
 interface GachaRecord {
@@ -169,21 +169,12 @@ export async function generateGachaRecord(
         if (existingWeaponPool.length === 0) {
           try {
             // Fetch weapon pool info from API
-            const weaponPoolUrl = new URL('/api/endfield/gacha/pool-chars', cfg.apiBaseUrl);
-            const weaponPoolResponse = await axios.get(weaponPoolUrl.toString(), {
-              params: {
-                pool_id: pKey,
-              },
-              headers: {
-                'X-API-KEY': cfg.apiKey,
-              },
-            });
+            const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
+            const gachaApi = new GachaApi(api);
+            const weaponPoolResponse = await gachaApi.getPoolChars(pKey);
 
-            if (
-              weaponPoolResponse.data.code === 0 &&
-              weaponPoolResponse.data.data.pools.length > 0
-            ) {
-              const weaponPoolData = weaponPoolResponse.data.data.pools[0];
+            if (weaponPoolResponse.pools.length > 0) {
+              const weaponPoolData = weaponPoolResponse.pools[0];
 
               // Find up weapons (is_up: true)
               const upWeapons = weaponPoolData.star6_chars.filter((char: any) => char.is_up);
@@ -495,18 +486,12 @@ export async function generateGachaRecord(
           if (!poolInfo) {
             try {
               // Fetch pool info from API
-              const poolUrl = new URL('/api/endfield/gacha/pool-chars', cfg.apiBaseUrl);
-              const poolResponse = await axios.get(poolUrl.toString(), {
-                params: {
-                  pool_id: specialPoolId,
-                },
-                headers: {
-                  'X-API-KEY': cfg.apiKey,
-                },
-              });
+              const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
+              const gachaApi = new GachaApi(api);
+              const poolResponse = await gachaApi.getPoolChars(specialPoolId);
 
-              if (poolResponse.data.code === 0 && poolResponse.data.data.pools.length > 0) {
-                const fetchedPool = poolResponse.data.data.pools[0];
+              if (poolResponse.pools.length > 0) {
+                const fetchedPool = poolResponse.pools[0];
 
                 // Check if there's a pool with the same name in poolInfoList
                 const existingPool = poolInfoList.find((p) => p.name === fetchedPool.pool_name);
