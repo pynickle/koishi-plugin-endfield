@@ -1,3 +1,9 @@
+## [1.12.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.3...v1.12.4) (2026-02-09)
+
+### ♻️ Code Refactoring
+
+* refactor completely ([5a9ab22](https://github.com/pynickle/koishi-plugin-endfield/commit/5a9ab22272423fc4388443f7f9a3f193d0e46bcb))
+
 ## [1.12.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.2...v1.12.3) (2026-02-07)
 
 ### 🚀 Improvements
