@@ -177,7 +177,52 @@ export async function generateGachaRecord(
               const weaponPoolData = weaponPoolResponse.pools[0];
 
               // Find up weapons (is_up: true)
-              const upWeapons = weaponPoolData.star6_chars.filter((char: any) => char.is_up);
+              let upWeapons = weaponPoolData.star6_chars.filter((char: any) => char.is_up);
+
+              // Smart up weapon detection if no weapons are marked as up
+              if (upWeapons.length === 0) {
+                const excludedWeapons = [
+                  '艺术暴君',
+                  '黯色火炬',
+                  '领航者',
+                  '作品：蚀迹',
+                  '骑士精神',
+                  '遗忘',
+                  '爆破单元',
+                  '沧溟星梦',
+                  '同类相食',
+                  '楔子',
+                  'J.E.T.',
+                  '骁勇',
+                  '负山',
+                  '破碎君王',
+                  '昔日精品',
+                  '典范',
+                  '赫拉芬格',
+                  '大雷斑',
+                  '白夜新星',
+                  '显赫声名',
+                  '热熔切割器',
+                  '扶摇',
+                  '不知归',
+                  '宏愿',
+                ];
+
+                // Filter out excluded weapons and only keep rarity 6 weapons
+                const filteredWeapons = weaponPoolData.star6_chars.filter(
+                  (char: any) => char.rarity === 6 && !excludedWeapons.includes(char.name)
+                );
+
+                // If only one weapon remains, consider it as up weapon
+                if (filteredWeapons.length === 1) {
+                  upWeapons = [
+                    {
+                      ...filteredWeapons[0],
+                      is_up: true,
+                    },
+                  ];
+                }
+              }
 
               // Prepare weapon pool data for database
               const weaponPoolRecord = {
