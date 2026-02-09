@@ -1,3 +1,9 @@
+## [1.12.5](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.4...v1.12.5) (2026-02-09)
+
+### 🚀 Improvements
+
+* try to get up weapons when fetching from api ([f5ff52a](https://github.com/pynickle/koishi-plugin-endfield/commit/f5ff52aeee666f1c3c3576e1c2a03a9a01db17e8))
+
 ## [1.12.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.3...v1.12.4) (2026-02-09)
 
 ### ♻️ Code Refactoring
