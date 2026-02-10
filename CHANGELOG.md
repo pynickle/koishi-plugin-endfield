@@ -1,3 +1,9 @@
+## [1.12.6](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.5...v1.12.6) (2026-02-10)
+
+### 🔧 Miscellaneous Changes
+
+* update deps ([29dc72b](https://github.com/pynickle/koishi-plugin-endfield/commit/29dc72bcb4ce61655edf83c5e72ce3b0c0e36cbf))
+
 ## [1.12.5](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.4...v1.12.5) (2026-02-09)
 
 ### 🚀 Improvements
