@@ -26,20 +26,24 @@ export function registerCommands(ctx: Context, cfg: Config) {
     .option('noSync', '-n 不同步直接获取抽卡记录')
     .action(async ({ session, options }) => endfieldGacha(ctx, session, cfg, options));
   ctx.command('endfield.stamina').action(async ({ session }) => endfieldStamina(ctx, session, cfg));
-  ctx
-    .command('endfield.subscribe <time>')
-    .action(async ({ session }, time) => endfieldSubscribe(ctx, session, cfg, time));
-  ctx
-    .command('endfield.unsubscribe')
-    .action(async ({ session }) => endfieldUnsubscribe(ctx, session, cfg));
-  ctx
-    .command('endfield.stamina.subscribe <duration:string> [reminder_interval:string]')
-    .action(async ({ session }, duration, reminder_interval) =>
-      endfieldStaminaSubscribe(ctx, session, cfg, duration, reminder_interval)
-    );
-  ctx
-    .command('endfield.stamina.unsubscribe')
-    .action(async ({ session }) => endfieldStaminaUnsubscribe(ctx, session, cfg));
+
+  if (cfg.enableStaminaSubscriptions) {
+    ctx
+      .command('endfield.subscribe <time>')
+      .action(async ({ session }, time) => endfieldSubscribe(ctx, session, cfg, time));
+    ctx
+      .command('endfield.unsubscribe')
+      .action(async ({ session }) => endfieldUnsubscribe(ctx, session, cfg));
+    ctx
+      .command('endfield.stamina.subscribe <duration:string> [reminder_interval:string]')
+      .action(async ({ session }, duration, reminder_interval) =>
+        endfieldStaminaSubscribe(ctx, session, cfg, duration, reminder_interval)
+      );
+    ctx
+      .command('endfield.stamina.unsubscribe')
+      .action(async ({ session }) => endfieldStaminaUnsubscribe(ctx, session, cfg));
+  }
+
   ctx
     .command('endfield.announcement', { authority: 4 })
     .action(async ({ session }) => endfieldAnnouncement(ctx, session, cfg));

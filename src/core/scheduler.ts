@@ -15,9 +15,11 @@ export function registerCronJobs(ctx: Context, cfg: Config) {
     await fetchAndSaveCharPools(ctx, cfg);
   });
 
-  ctx.cron(CRON_SCHEDULES.CHECK_SUBSCRIPTIONS, async () => {
-    await checkSubscriptions(ctx, cfg);
-  });
+  if (cfg.enableStaminaSubscriptions) {
+    ctx.cron(CRON_SCHEDULES.CHECK_SUBSCRIPTIONS, async () => {
+      await checkSubscriptions(ctx, cfg);
+    });
+  }
 
   ctx.cron(CRON_SCHEDULES.CHECK_ANNOUNCEMENTS, async () => {
     await checkAnnouncements(ctx, cfg);
