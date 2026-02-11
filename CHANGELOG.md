@@ -1,3 +1,9 @@
+## [1.13.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.6...v1.13.0) (2026-02-11)
+
+### ✨ Features
+
+* add stamina subscriptions config ([965de5c](https://github.com/pynickle/koishi-plugin-endfield/commit/965de5c79bb9e16edd2675972b337472757f4a44))
+
 ## [1.12.6](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.5...v1.12.6) (2026-02-10)
 
 ### 🔧 Miscellaneous Changes
