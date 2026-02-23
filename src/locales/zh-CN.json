@@ -67,7 +67,7 @@
       "description": "订阅体力提醒",
       "messages": {
         "createSuccess": "订阅成功！将在每天 {time} 提醒您完成每日任务",
-        "invalidDuration": "体力阈值格式无效，请使用类似 3h 或 3h30m30s 的格式",
+        "invalidDuration": "体力阈值格式无效，请使用类似 3h5s 或 3h30m30s 的格式",
         "invalidReminderInterval": "提醒间隔格式无效，请使用类似 1h 或 2h 的格式",
         "updateSuccessStamina": "体力订阅已更新：体力阈值 {duration}，提醒间隔 {reminder_interval}",
         "createSuccessStamina": "体力订阅成功！当体力距离恢复满的时间小于 {duration} 时将提醒您，且每 {reminder_interval} 最多提醒一次"
