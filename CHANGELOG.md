@@ -4,6 +4,20 @@
 
 * add free display of gacha ([3a98d38](https://github.com/pynickle/koishi-plugin-endfield/commit/3a98d38559bf7d368ea98780bfb8818ec5431500))
 
+### ♻️ Code Refactoring
+
+* trigger ([84302cd](https://github.com/pynickle/koishi-plugin-endfield/commit/84302cd706bbe8a4df37f1d87aadedbeb3a15c45))
+
+### 🔧 Miscellaneous Changes
+
+* **release:** 1.14.0 [skip ci] ([7b01d4b](https://github.com/pynickle/koishi-plugin-endfield/commit/7b01d4b65779f758d9d513584950619fb2460eea))
+
+## [1.14.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.13.0...v1.14.0) (2026-02-23)
+
+### ✨ Features
+
+* add free display of gacha ([3a98d38](https://github.com/pynickle/koishi-plugin-endfield/commit/3a98d38559bf7d368ea98780bfb8818ec5431500))
+
 ## [1.13.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.12.6...v1.13.0) (2026-02-11)
 
 ### ✨ Features
