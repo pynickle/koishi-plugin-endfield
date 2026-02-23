@@ -1,11 +1,3 @@
-import type {
-  CharPool,
-  WeaponPool,
-  Binding,
-  Subscription,
-  StaminaSubscription,
-  AnnouncementRecord,
-} from '../types';
 import { Context } from 'koishi';
 
 export function extendDatabase(ctx: Context) {

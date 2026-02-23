@@ -1,5 +1,5 @@
 import { Config } from '../../config/config';
-import { GachaApi, createApiClient } from '../api';
+import { createApiClient, GachaApi } from '../api';
 import { Context } from 'koishi';
 
 interface GachaRecord {
@@ -21,6 +21,8 @@ interface ProcessedPool {
   pity: number;
   records: GachaRecord[];
   star6: { name: string; count: number; isUp: boolean }[];
+  freeStar6: { name: string; count: number; isUp: boolean }[];
+  freeCount: number;
   star5Count: number;
   poolId: string;
 }
@@ -102,6 +104,82 @@ export async function generateGachaRecord(
     }
   };
 
+  const ensureWeaponPoolInfo = async (poolId: string) => {
+    if (!extractVersion(poolId) || poolId.startsWith('special')) return;
+
+    const existingWeaponPool = await ctx.database.get('endfield_weapon_pools', poolId);
+    if (existingWeaponPool.length > 0) return;
+
+    try {
+      const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
+      const gachaApi = new GachaApi(api);
+      const weaponPoolResponse = await gachaApi.getPoolChars(poolId);
+
+      if (weaponPoolResponse.pools.length === 0) return;
+
+      const weaponPoolData = weaponPoolResponse.pools[0];
+      let upWeapons = weaponPoolData.star6_chars.filter((char: any) => char.is_up);
+
+      if (upWeapons.length === 0) {
+        const excludedWeapons = [
+          '艺术暴君',
+          '黯色火炬',
+          '领航者',
+          '作品：蚀迹',
+          '骑士精神',
+          '遗忘',
+          '爆破单元',
+          '沧溟星梦',
+          '同类相食',
+          '楔子',
+          'J.E.T.',
+          '骁勇',
+          '负山',
+          '破碎君王',
+          '昔日精品',
+          '典范',
+          '赫拉芬格',
+          '大雷斑',
+          '白夜新星',
+          '显赫声名',
+          '热熔切割器',
+          '扶摇',
+          '不知归',
+          '宏愿',
+        ];
+
+        const filteredWeapons = weaponPoolData.star6_chars.filter(
+          (char: any) => char.rarity === 6 && !excludedWeapons.includes(char.name)
+        );
+
+        if (filteredWeapons.length === 1) {
+          upWeapons = [
+            {
+              ...filteredWeapons[0],
+              is_up: true,
+            },
+          ];
+        }
+      }
+
+      const weaponPoolRecord = {
+        pool_id: poolId,
+        pool_name: weaponPoolData.pool_name as string,
+        up_weapons: upWeapons as Array<{
+          char_id: string;
+          name: string;
+          cover: string;
+          rarity: number;
+          is_up: boolean;
+        }>,
+      };
+
+      await ctx.database.upsert('endfield_weapon_pools', [weaponPoolRecord]);
+    } catch (error) {
+      ctx.logger.error('Error fetching weapon pool info:', error);
+    }
+  };
+
   // Process Pity and Distribution
   // Global counters for inheriting pools (Special Char, Standard, Weapon Constant, Beginner)
   const typePityCounters = {
@@ -116,7 +194,45 @@ export async function generateGachaRecord(
 
   for (const rec of records) {
     totalPulls++;
-    if (rec.is_free) continue;
+    if (rec.is_free) {
+      if (rec.rarity === 6) {
+        const pKey = rec.pool_id;
+        const pType = getPoolType(pKey);
+
+        if (!poolsMap.has(pKey)) {
+          poolsMap.set(pKey, {
+            name: rec.pool_name,
+            type: pType,
+            total: 0,
+            pity: 0,
+            records: [],
+            star6: [],
+            freeStar6: [],
+            freeCount: 0,
+            star5Count: 0,
+            poolId: pKey,
+          });
+        }
+
+        await ensureWeaponPoolInfo(pKey);
+
+        const isUp =
+          pType === 'special' || pType === 'weapon'
+            ? isUpChar(rec.char_name, rec.pool_name, rec.pool_id) ||
+              (await isUpWeapon(rec.char_name, rec.pool_id))
+            : false;
+
+        const poolData = poolsMap.get(pKey)!;
+        poolData.freeCount++;
+        poolData.freeStar6.push({
+          name: rec.char_name,
+          count: 1,
+          isUp,
+        });
+      }
+
+      continue;
+    }
 
     const pKey = rec.pool_id;
     const pType = getPoolType(pKey);
@@ -134,6 +250,8 @@ export async function generateGachaRecord(
         pity: 0,
         records: [],
         star6: [],
+        freeStar6: [],
+        freeCount: 0,
         star5Count: 0,
         poolId: pKey,
       });
@@ -164,87 +282,7 @@ export async function generateGachaRecord(
     }
 
     if (rec.rarity === 6) {
-      if (extractVersion(pKey) && !pKey.startsWith('special')) {
-        const existingWeaponPool = await ctx.database.get('endfield_weapon_pools', pKey);
-        if (existingWeaponPool.length === 0) {
-          try {
-            // Fetch weapon pool info from API
-            const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
-            const gachaApi = new GachaApi(api);
-            const weaponPoolResponse = await gachaApi.getPoolChars(pKey);
-
-            if (weaponPoolResponse.pools.length > 0) {
-              const weaponPoolData = weaponPoolResponse.pools[0];
-
-              // Find up weapons (is_up: true)
-              let upWeapons = weaponPoolData.star6_chars.filter((char: any) => char.is_up);
-
-              // Smart up weapon detection if no weapons are marked as up
-              if (upWeapons.length === 0) {
-                const excludedWeapons = [
-                  '艺术暴君',
-                  '黯色火炬',
-                  '领航者',
-                  '作品：蚀迹',
-                  '骑士精神',
-                  '遗忘',
-                  '爆破单元',
-                  '沧溟星梦',
-                  '同类相食',
-                  '楔子',
-                  'J.E.T.',
-                  '骁勇',
-                  '负山',
-                  '破碎君王',
-                  '昔日精品',
-                  '典范',
-                  '赫拉芬格',
-                  '大雷斑',
-                  '白夜新星',
-                  '显赫声名',
-                  '热熔切割器',
-                  '扶摇',
-                  '不知归',
-                  '宏愿',
-                ];
-
-                // Filter out excluded weapons and only keep rarity 6 weapons
-                const filteredWeapons = weaponPoolData.star6_chars.filter(
-                  (char: any) => char.rarity === 6 && !excludedWeapons.includes(char.name)
-                );
-
-                // If only one weapon remains, consider it as up weapon
-                if (filteredWeapons.length === 1) {
-                  upWeapons = [
-                    {
-                      ...filteredWeapons[0],
-                      is_up: true,
-                    },
-                  ];
-                }
-              }
-
-              // Prepare weapon pool data for database
-              const weaponPoolRecord = {
-                pool_id: pKey,
-                pool_name: weaponPoolData.pool_name as string,
-                up_weapons: upWeapons as Array<{
-                  char_id: string;
-                  name: string;
-                  cover: string;
-                  rarity: number;
-                  is_up: boolean;
-                }>,
-              };
-
-              // Save to database
-              await ctx.database.upsert('endfield_weapon_pools', [weaponPoolRecord]);
-            }
-          } catch (error) {
-            ctx.logger.error('Error fetching weapon pool info:', error);
-          }
-        }
-      }
+      await ensureWeaponPoolInfo(pKey);
 
       const isUp =
         pType === 'special' || pType === 'weapon'
@@ -324,6 +362,7 @@ export async function generateGachaRecord(
 
   const renderPoolCard = (pool: ProcessedPool, color?: string, pityLabel: string = '当前垫刀') => {
     const reversedHistory = [...pool.star6].reverse();
+    const reversedFreeHistory = [...pool.freeStar6].reverse();
 
     // Stats Line
     let extraStats = '';
@@ -332,6 +371,11 @@ export async function generateGachaRecord(
       const winRate = pool.star6.length > 0 ? ((upCount / pool.star6.length) * 100).toFixed(0) : 0;
       extraStats = `<span class="tag is-light is-rounded mr-2">不歪率: <strong>${winRate}%</strong></span>`;
     }
+
+    const freeBadge =
+      pool.freeStar6.length > 0
+        ? `<span class="tag is-free is-rounded has-text-weight-semibold">免费出货 ${pool.freeStar6.length}</span>`
+        : '';
 
     return `
       <div class="column is-12 box mb-4" style="border-left: 5px solid ${color ? color : pool.type === 'special' ? '#ff3860' : '#3273dc'}">
@@ -345,8 +389,12 @@ export async function generateGachaRecord(
             </div>
             <div class="level-item ml-4">
               <div>
-                <p class="heading has-text-grey">${pityLabel}</p> <p class="title is-4 ${getPityColor(pool.pity)}">${pool.pity}</p>
+                <p class="heading has-text-grey">${pityLabel}</p>
+                <p class="title is-4 ${getPityColor(pool.pity)}">${pool.pity}</p>
               </div>
+            </div>
+            <div class="level-item ml-4">
+               ${freeBadge}
             </div>
           </div>
           <div class="level-right has-text-right">
@@ -363,25 +411,46 @@ export async function generateGachaRecord(
         </div>
 
         <div class="field is-grouped is-grouped-multiline">
-          ${reversedHistory.length === 0 ? '<span class="has-text-grey-light is-size-7 is-italic">本池无六星产出</span>' : ''}
-          ${reversedHistory
-            .map(
-              (s, idx) => `
-            <div class="control">
+           ${
+             reversedHistory.length === 0 && reversedFreeHistory.length === 0
+               ? '<span class="has-text-grey-light is-size-7 is-italic">本池无六星产出</span>'
+               : ''
+           }
+           ${reversedHistory
+             .map(
+               (s, idx) => `
+             <div class="control">
+               <div class="tags has-addons">
+                 <span class="tag is-dark">#${pool.star6.length - idx}</span>
+                 <span class="tag ${s.isUp ? 'is-danger' : 'is-warning'} is-light has-text-weight-bold">
+                    ${s.name}
+                    ${s.isUp ? '<span class="ml-1 icon is-small">UP</span>' : ''}
+                 </span>
+                <span class="tag ${Number(s.count) > 60 ? 'is-danger' : 'is-success'} is-light">${s.count}抽</span>
+               </div>
+             </div>
+           `
+             )
+             .join('')}
+        </div>
+        ${reversedFreeHistory.length !== 0 ? `<hr class="my-3 mx-2">` : ``}
+        <div class="field is-grouped is-grouped-multiline">
+           ${reversedFreeHistory
+             .map(
+               (s) => `
+            <div class="control free-entry">
               <div class="tags has-addons">
-                <span class="tag is-dark">#${pool.star6.length - idx}</span>
+                <span class="tag is-dark">FREE</span>
                 <span class="tag ${s.isUp ? 'is-danger' : 'is-warning'} is-light has-text-weight-bold">
                    ${s.name}
                    ${s.isUp ? '<span class="ml-1 icon is-small">UP</span>' : ''}
                 </span>
-                <span class="tag ${Number(s.count) > 60 ? 'is-danger' : 'is-success'} is-light">
-                  ${s.count}抽
-                </span>
+                <span class="tag is-free is-light">免费</span>
               </div>
             </div>
           `
-            )
-            .join('')}
+             )
+             .join('')}
         </div>
       </div>
     `;
@@ -439,6 +508,8 @@ export async function generateGachaRecord(
     .divider::after { content: attr(data-label); position: absolute; left: 0; bottom: 5px; background: #f5f7fa; padding-right: 10px; font-weight: bold; color: #b5b5b5; font-size: 0.85rem; }
     .tag.is-warning.is-light { background-color: #fffbeb !important; color: #947600 !important; }
     .tag.is-danger.is-light { background-color: #feecf0 !important; color: #cc0f35 !important; }
+    .tag.is-free { background-color: #eefaf2 !important; color: #257942 !important; border: 1px solid #b7e3c2; }
+    .free-entry { display: inline-block; padding: 2px 0; }
   </style>
 </head>
 <body>
