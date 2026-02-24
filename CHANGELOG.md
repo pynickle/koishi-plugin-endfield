@@ -1,3 +1,9 @@
+## [1.14.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.14.0...v1.14.1) (2026-02-24)
+
+### 🐛 Bug Fixes
+
+* fix wrong pool id ([6c2b300](https://github.com/pynickle/koishi-plugin-endfield/commit/6c2b300d704feb122cbb5e9c2d01d93cd9123c9b))
+
 ## [1.14.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.13.0...v1.14.0) (2026-02-23)
 
 ### ✨ Features
