@@ -1,5 +1,7 @@
 import { Config } from '../../config/config';
+import { getDominantColor } from '../../utils/color-utils';
 import { createApiClient, GachaApi } from '../api';
+import { fetchAndSaveCharPools } from '../services/char-pools';
 import { Context } from 'koishi';
 
 interface GachaRecord {
@@ -74,7 +76,7 @@ export async function generateGachaRecord(
   const isUpChar = (charName: string, poolName: string, poolId: string) => {
     const info = poolInfoList.find((p) => p.name === poolName || p.pool_id === poolId);
     if (!info) return false;
-    return info.chars?.some((c) => c.name === charName && c.rarity === 'rarity_6');
+    return info.chars?.some((c) => c.name === charName);
   };
 
   const isUpWeapon = async (weaponName: string, poolId: string): Promise<boolean> => {
@@ -482,9 +484,19 @@ export async function generateGachaRecord(
 
   // Sort versions in descending order
   const sortedVersions = Array.from(versionMap.values()).sort((a, b) => {
+    const getParts = (v) => {
+      if (v.parts[0] === 1 && v.parts[1] === 0 && v.parts[2] === 2) {
+        return [1, 0, 5];
+      }
+      return v.parts;
+    };
+
+    const aParts = getParts(a);
+    const bParts = getParts(b);
+
     for (let i = 0; i < 3; i++) {
-      if (a.parts[i] !== b.parts[i]) {
-        return b.parts[i] - a.parts[i];
+      if (aParts[i] !== bParts[i]) {
+        return bParts[i] - aParts[i];
       }
     }
     return 0;
@@ -580,7 +592,8 @@ export async function generateGachaRecord(
           // Process version string
           const versionParts = versionData.version.split('_').map(Number);
           const verString = `VER ${versionParts[0]}.${versionParts[1]}`;
-          const upString = `UP ${(versionParts[2] + 1) / 2}`;
+          const upString =
+            versionData.version === '1_0_2' ? 'UP 3' : `UP ${(versionParts[2] + 1) / 2}`;
 
           // Get pool info for date range
           let dateRange = '202X.XX.XX - 202X.XX.XX';
@@ -621,9 +634,7 @@ export async function generateGachaRecord(
                   poolInfo = existingPool;
                 } else {
                   // If no existing pool, fetch and save all char pools
-                  await import('../services/char-pools').then((module) => {
-                    return module.fetchAndSaveCharPools(ctx, cfg);
-                  });
+                  await fetchAndSaveCharPools(ctx, cfg);
 
                   // Get updated pool data from database
                   const updatedPools = await ctx.database.get('endfield_char_pools_v2', {});
@@ -638,6 +649,18 @@ export async function generateGachaRecord(
                       pool_id: specialPoolId,
                     });
                     poolInfo = updatedExistingPool;
+                  } else {
+                    const upChar = fetchedPool.star6_chars.find((c) => c.is_up === true);
+                    if (upChar) {
+                      const upCharNormalized = { name: upChar.name, pic: upChar.cover };
+                      poolInfo = {
+                        pool_id: specialPoolId,
+                        name: fetchedPool.pool_name,
+                        chars: [upCharNormalized],
+                        dominant_color: await getDominantColor(ctx, upChar.cover),
+                      };
+                      await ctx.database.upsert('endfield_char_pools_v2', [poolInfo]);
+                    }
                   }
                 }
               }
@@ -647,7 +670,7 @@ export async function generateGachaRecord(
           }
 
           let dominantColor = '#ff3860';
-          if (poolInfo) {
+          if (poolInfo && poolInfo.pool_start_at_ts && poolInfo.pool_end_at_ts) {
             const startDate = formatDate(poolInfo.pool_start_at_ts);
             const endDate = formatDate(poolInfo.pool_end_at_ts);
             dateRange = `${startDate} - ${endDate}`;
