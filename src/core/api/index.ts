@@ -6,7 +6,13 @@ export {
   type AuthRequestResponse,
   type AuthStatusResponse,
 } from './auth';
-export { CharacterApi, type Character, type CharacterNote, type CharacterCard } from './character';
+export {
+  CharacterApi,
+  type Character,
+  type CharacterNote,
+  type CharacterNoteDetail,
+  type CharacterCard,
+} from './character';
 export {
   GachaApi,
   type GachaRecord,

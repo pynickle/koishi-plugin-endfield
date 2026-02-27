@@ -31,6 +31,10 @@
         "cardError": "获取干员详情失败：{message}"
       }
     },
+    "endfield.note": {
+      "description": "获取干员列表",
+      "messages": {}
+    },
     "endfield.gacha": {
       "description": "获取抽卡记录",
       "messages": {
