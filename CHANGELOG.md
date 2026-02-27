@@ -1,3 +1,13 @@
+## [1.15.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.15.0...v1.15.1) (2026-02-27)
+
+### 💄 Style Improvements
+
+* delete debug code ([067fd36](https://github.com/pynickle/koishi-plugin-endfield/commit/067fd36f01f5ff68a5114a7efd56d38bad1bc983))
+
+### ♻️ Code Refactoring
+
+* trigger release and update readme ([f3185ec](https://github.com/pynickle/koishi-plugin-endfield/commit/f3185ec459221fddc64eee290122f399d4336599))
+
 ## [1.15.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.14.1...v1.15.0) (2026-02-27)
 
 ### ✨ Features
