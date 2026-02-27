@@ -1,3 +1,4 @@
+import { cacheImage, cacheImages } from '../../utils/image-cache';
 import { CharacterNoteDetail } from '../api';
 import { Context } from 'koishi';
 
@@ -17,7 +18,10 @@ const getRarityStyle = (rarity: string | number) => {
   return rarityColorMap[key] || { border: '#dbdbdb', text: '#4a4a4a' };
 };
 
-export async function generateOperatorList(note: CharacterNoteDetail): Promise<string> {
+export async function generateOperatorList(
+  ctx: Context,
+  note: CharacterNoteDetail
+): Promise<string> {
   const base = note.base;
   const sortedChars = [...note.chars].sort((a, b) => {
     const rarityA = Number(a.rarity?.value || 0);
@@ -26,16 +30,24 @@ export async function generateOperatorList(note: CharacterNoteDetail): Promise<s
     return b.level - a.level;
   });
 
+  const avatarUrls = sortedChars
+    .map((char) => char.avatarSqUrl || char.avatarRtUrl)
+    .filter(Boolean);
+  const cachedAvatarMap = await cacheImages(ctx, avatarUrls, 6);
+  const cachedHeaderAvatar = await cacheImage(ctx, base.avatarUrl);
+
   const charCards = sortedChars
     .map((char) => {
       const rarity = char.rarity?.value || '0';
       const style = getRarityStyle(rarity);
+      const avatarUrl = cleanUrl(char.avatarSqUrl || char.avatarRtUrl);
+      const cachedAvatar = cachedAvatarMap.get(avatarUrl) || avatarUrl;
       return `
         <div class="column is-6-mobile is-4-tablet is-3-desktop">
           <div class="card operator-card" style="border-top: 4px solid ${style.border};">
             <div class="card-image">
               <figure class="image is-square">
-                <img src="${cleanUrl(char.avatarRtUrl || char.avatarSqUrl)}" alt="${char.name}">
+                <img src="${cachedAvatar}" alt="${char.name}" width="256" height="256" loading="eager">
               </figure>
             </div>
             <div class="card-content p-3">
@@ -116,7 +128,7 @@ export async function generateOperatorList(note: CharacterNoteDetail): Promise<s
       <div class="level is-mobile">
         <div class="level-left">
           <div class="level-item header-avatar mr-3">
-            <img src="${cleanUrl(base.avatarUrl)}" alt="${base.name}">
+            <img src="${cachedHeaderAvatar}" alt="${base.name}" width="64" height="64" loading="eager">
           </div>
           <div class="level-item">
             <div>
@@ -177,6 +189,6 @@ export async function generateOperatorList(note: CharacterNoteDetail): Promise<s
 
 export async function renderOperatorList(ctx: Context, note: CharacterNoteDetail): Promise<string> {
   const { puppeteer } = ctx;
-  const html = await generateOperatorList(note);
+  const html = await generateOperatorList(ctx, note);
   return puppeteer.render(html);
 }
