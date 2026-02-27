@@ -3,6 +3,11 @@ import { CharacterApi, createApiClient } from '../api';
 import { renderOperatorList } from '../render/note';
 import { Context, Session } from 'koishi';
 
+function extractImageSrc(image: string) {
+  const match = image.match(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/i);
+  return match ? match[1] : '';
+}
+
 export async function endfieldNote(ctx: Context, session: Session, cfg: Config) {
   try {
     if (session.onebot && session.messageId) {
@@ -30,10 +35,11 @@ export async function endfieldNote(ctx: Context, session: Session, cfg: Config) 
 
     const noteData = await characterApi.getNote(frameworkToken);
     const image = await renderOperatorList(ctx, noteData);
+    const imageSrc = extractImageSrc(image) || image;
 
-    if (session.platform === 'onebot' && session.onebot && session.messageId) {
+    if (session.onebot && session.messageId && imageSrc) {
       const reply = { type: 'reply', data: { id: session.messageId } };
-      const imageMsg = { type: 'image', data: { file: image } };
+      const imageMsg = { type: 'image', data: { file: imageSrc } };
       if (session.guildId) {
         await session.onebot.sendGroupMsg(session.guildId, [reply, imageMsg]);
         return;
