@@ -1,3 +1,9 @@
+## [1.16.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.16.0...v1.16.1) (2026-02-27)
+
+### 🐛 Bug Fixes
+
+* fix image ([1e53a88](https://github.com/pynickle/koishi-plugin-endfield/commit/1e53a883cd8d1c6ddc55b5bf07a978b859a3607a))
+
 ## [1.16.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.15.2...v1.16.0) (2026-02-27)
 
 ### ✨ Features
