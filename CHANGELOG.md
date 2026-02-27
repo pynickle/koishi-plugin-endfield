@@ -1,3 +1,9 @@
+## [1.16.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.15.2...v1.16.0) (2026-02-27)
+
+### ✨ Features
+
+* add msg like and reply for note ([1ea965d](https://github.com/pynickle/koishi-plugin-endfield/commit/1ea965d87c1ca331ae02426abc2e3babc0fabbe5))
+
 ## [1.15.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.15.1...v1.15.2) (2026-02-27)
 
 ### ⚡ Performance Improvements
