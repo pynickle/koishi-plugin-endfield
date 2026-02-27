@@ -1,3 +1,9 @@
+## [1.15.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.14.1...v1.15.0) (2026-02-27)
+
+### ✨ Features
+
+* add char note ([70c3a05](https://github.com/pynickle/koishi-plugin-endfield/commit/70c3a05eed76ef7e69c2cd446709a28c5e89c54a))
+
 ## [1.14.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.14.0...v1.14.1) (2026-02-24)
 
 ### 🐛 Bug Fixes
