@@ -5,6 +5,17 @@ import { Context, Session } from 'koishi';
 
 export async function endfieldNote(ctx: Context, session: Session, cfg: Config) {
   try {
+    if (session.onebot && session.messageId) {
+      try {
+        await session.onebot._request('set_msg_emoji_like', {
+          message_id: session.messageId,
+          emoji_id: 147,
+        });
+      } catch (error) {
+        ctx.logger.warn('Failed to set msg emoji like:', error);
+      }
+    }
+
     const bindings = await ctx.database.get('endfield_bindings_v3', session.userId);
 
     if (bindings.length === 0) {
@@ -18,7 +29,20 @@ export async function endfieldNote(ctx: Context, session: Session, cfg: Config) 
     const characterApi = new CharacterApi(api);
 
     const noteData = await characterApi.getNote(frameworkToken);
-    return renderOperatorList(ctx, noteData);
+    const image = await renderOperatorList(ctx, noteData);
+
+    if (session.platform === 'onebot' && session.onebot && session.messageId) {
+      const reply = { type: 'reply', data: { id: session.messageId } };
+      const imageMsg = { type: 'image', data: { file: image } };
+      if (session.guildId) {
+        await session.onebot.sendGroupMsg(session.guildId, [reply, imageMsg]);
+        return;
+      }
+      await session.onebot.sendPrivateMsg(session.userId, [reply, imageMsg]);
+      return;
+    }
+
+    return image;
   } catch (error) {
     ctx.logger.error('Endfield note error:', error);
     return session.text('endfield.networkError');

@@ -41,8 +41,6 @@ export async function cacheImage(ctx: Context, url: string): Promise<string> {
   } catch {
     return await downloadToCache(ctx, normalized, targetPath);
   }
-
-  return await downloadToCache(ctx, normalized, targetPath);
 }
 
 async function downloadToCache(ctx: Context, url: string, targetPath: string) {
