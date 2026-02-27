@@ -178,6 +178,5 @@ export async function generateOperatorList(note: CharacterNoteDetail): Promise<s
 export async function renderOperatorList(ctx: Context, note: CharacterNoteDetail): Promise<string> {
   const { puppeteer } = ctx;
   const html = await generateOperatorList(note);
-  ctx.logger.info(html);
   return puppeteer.render(html);
 }
