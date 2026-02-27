@@ -1,3 +1,9 @@
+## [1.15.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.15.1...v1.15.2) (2026-02-27)
+
+### ⚡ Performance Improvements
+
+* improve note performance ([a3125c9](https://github.com/pynickle/koishi-plugin-endfield/commit/a3125c935b67ffef6b89bd2e9be4a65df71bcdcc))
+
 ## [1.15.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.15.0...v1.15.1) (2026-02-27)
 
 ### 💄 Style Improvements
