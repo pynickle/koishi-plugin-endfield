@@ -4,5 +4,6 @@
   "clientUrl": "Endfield 客户端基础 URL",
   "adminQQ": "管理员 QQ 号",
   "enableStaminaSubscriptions": "启用体力和每日活跃订阅",
-  "announcementGroups": "公告提醒的群号列表"
+  "announcementGroups": "公告提醒的群号列表",
+  "noteAvatarStyle": "干员列表头像样式 (rt: 矩形, sq: 方形)"
 }

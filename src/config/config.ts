@@ -8,6 +8,7 @@ export interface Config {
   adminQQ: string;
   enableStaminaSubscriptions: boolean;
   announcementGroups: string[];
+  noteAvatarStyle: 'rt' | 'sq';
 }
 
 export const Config: Schema<Config> = Schema.object({
@@ -17,6 +18,7 @@ export const Config: Schema<Config> = Schema.object({
   adminQQ: Schema.string().required(),
   enableStaminaSubscriptions: Schema.boolean().default(false),
   announcementGroups: Schema.array(Schema.string()).default([]),
+  noteAvatarStyle: Schema.union(['rt', 'sq']).default('rt'),
 }).i18n({
   'zh-CN': zhCN,
 });

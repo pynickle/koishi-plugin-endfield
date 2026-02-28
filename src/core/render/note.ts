@@ -20,7 +20,8 @@ const getRarityStyle = (rarity: string | number) => {
 
 export async function generateOperatorList(
   ctx: Context,
-  note: CharacterNoteDetail
+  note: CharacterNoteDetail,
+  avatarStyle: 'rt' | 'sq' = 'rt'
 ): Promise<string> {
   const base = note.base;
   const sortedChars = [...note.chars].sort((a, b) => {
@@ -31,7 +32,7 @@ export async function generateOperatorList(
   });
 
   const avatarUrls = sortedChars
-    .map((char) => char.avatarSqUrl || char.avatarRtUrl)
+    .map((char) => (avatarStyle === 'sq' ? char.avatarSqUrl : char.avatarRtUrl))
     .filter(Boolean);
   const cachedAvatarMap = await cacheImages(ctx, avatarUrls, 6);
   const cachedHeaderAvatar = await cacheImage(ctx, base.avatarUrl);
@@ -40,14 +41,14 @@ export async function generateOperatorList(
     .map((char) => {
       const rarity = char.rarity?.value || '0';
       const style = getRarityStyle(rarity);
-      const avatarUrl = cleanUrl(char.avatarSqUrl || char.avatarRtUrl);
+      const avatarUrl = cleanUrl(avatarStyle === 'sq' ? char.avatarSqUrl : char.avatarRtUrl);
       const cachedAvatar = cachedAvatarMap.get(avatarUrl) || avatarUrl;
       return `
         <div class="column is-6-mobile is-4-tablet is-3-desktop">
           <div class="card operator-card" style="border-top: 4px solid ${style.border};">
             <div class="card-image">
-              <figure class="image is-square">
-                <img src="${cachedAvatar}" alt="${char.name}" width="256" height="256" loading="eager">
+              <figure class="image ${avatarStyle === 'sq' ? 'is-square' : 'is-3by4'}">
+                <img src="${cachedAvatar}" alt="${char.name}" width="${avatarStyle === 'sq' ? 256 : 300}" height="${avatarStyle === 'sq' ? 256 : 400}" loading="eager">
               </figure>
             </div>
             <div class="card-content p-3">
@@ -187,8 +188,12 @@ export async function generateOperatorList(
   `;
 }
 
-export async function renderOperatorList(ctx: Context, note: CharacterNoteDetail): Promise<string> {
+export async function renderOperatorList(
+  ctx: Context,
+  note: CharacterNoteDetail,
+  avatarStyle: 'rt' | 'sq' = 'rt'
+): Promise<string> {
   const { puppeteer } = ctx;
-  const html = await generateOperatorList(ctx, note);
+  const html = await generateOperatorList(ctx, note, avatarStyle);
   return puppeteer.render(html);
 }

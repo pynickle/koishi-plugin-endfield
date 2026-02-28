@@ -34,7 +34,7 @@ export async function endfieldNote(ctx: Context, session: Session, cfg: Config) 
     const characterApi = new CharacterApi(api);
 
     const noteData = await characterApi.getNote(frameworkToken);
-    const image = await renderOperatorList(ctx, noteData);
+    const image = await renderOperatorList(ctx, noteData, cfg.noteAvatarStyle);
     const imageSrc = extractImageSrc(image) || image;
 
     if (session.onebot && session.messageId && imageSrc) {
