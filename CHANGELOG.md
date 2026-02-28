@@ -1,3 +1,9 @@
+## [1.17.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.16.1...v1.17.0) (2026-02-28)
+
+### ✨ Features
+
+* add config option for avatar style ([edfc343](https://github.com/pynickle/koishi-plugin-endfield/commit/edfc343b890d8ccb77bbe51783f6c3c3fa33a722))
+
 ## [1.16.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.16.0...v1.16.1) (2026-02-27)
 
 ### 🐛 Bug Fixes
