@@ -1,3 +1,9 @@
+## [1.18.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.17.0...v1.18.0) (2026-03-04)
+
+### ✨ Features
+
+* add panel ([7c43b6e](https://github.com/pynickle/koishi-plugin-endfield/commit/7c43b6ee8b81c9dae57e83506b3394b854353e38))
+
 ## [1.17.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.16.1...v1.17.0) (2026-02-28)
 
 ### ✨ Features
