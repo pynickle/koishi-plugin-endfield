@@ -9,6 +9,8 @@ export interface Config {
   enableStaminaSubscriptions: boolean;
   announcementGroups: string[];
   noteAvatarStyle: 'rt' | 'sq';
+  enableEndfieldPanelApi: boolean;
+  endfieldPanelApiUrl: string;
 }
 
 export const Config: Schema<Config> = Schema.object({
@@ -19,6 +21,8 @@ export const Config: Schema<Config> = Schema.object({
   enableStaminaSubscriptions: Schema.boolean().default(false),
   announcementGroups: Schema.array(Schema.string()).default([]),
   noteAvatarStyle: Schema.union(['rt', 'sq']).default('rt'),
+  enableEndfieldPanelApi: Schema.boolean().default(false),
+  endfieldPanelApiUrl: Schema.string().default(''),
 }).i18n({
   'zh-CN': zhCN,
 });

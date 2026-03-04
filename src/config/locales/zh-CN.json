@@ -5,5 +5,7 @@
   "adminQQ": "管理员 QQ 号",
   "enableStaminaSubscriptions": "启用体力和每日活跃订阅",
   "announcementGroups": "公告提醒的群号列表",
-  "noteAvatarStyle": "干员列表头像样式 (rt: 矩形, sq: 方形)"
+  "noteAvatarStyle": "干员列表头像样式 (rt: 矩形, sq: 方形)",
+  "enableEndfieldPanelApi": "启用 Endfield 面板 API (作者自用)",
+  "endfieldPanelApiUrl": "Endfield 面板 API URL (作者自用)"
 }
