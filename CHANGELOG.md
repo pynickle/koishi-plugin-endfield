@@ -1,3 +1,9 @@
+## [1.18.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.18.2...v1.18.3) (2026-03-06)
+
+### 🐛 Bug Fixes
+
+* fix multiple char pool data in db ([6f967a0](https://github.com/pynickle/koishi-plugin-endfield/commit/6f967a0b8dd519f645f6831f5b80415a13704770))
+
 ## [1.18.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.18.1...v1.18.2) (2026-03-06)
 
 ### 🐛 Bug Fixes
