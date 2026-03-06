@@ -1,3 +1,9 @@
+## [1.18.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.18.1...v1.18.2) (2026-03-06)
+
+### 🐛 Bug Fixes
+
+* fix getDominantColor conflict ([7dfde37](https://github.com/pynickle/koishi-plugin-endfield/commit/7dfde370b9197ca2f4c54c455fd79b19d8e70b0c))
+
 ## [1.18.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.18.0...v1.18.1) (2026-03-05)
 
 ### 🔧 Miscellaneous Changes
