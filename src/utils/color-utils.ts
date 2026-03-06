@@ -4,6 +4,7 @@ import fs from 'fs/promises';
 import { Context } from 'koishi';
 import { tmpdir } from 'os';
 import { join, extname } from 'path';
+import { randomUUID } from 'node:crypto';
 
 export async function getDominantColor(
   ctx: Context,
@@ -26,7 +27,7 @@ export async function getDominantColor(
     let extension = extname(urlObj.pathname);
     if (!extension || extension.length > 5) extension = '.png';
 
-    tempPath = join(tmpdir(), `colorthief-temp${extension}`);
+    tempPath = join(tmpdir(), `colorthief-temp-${randomUUID()}${extension}`);
 
     await fs.writeFile(tempPath, buffer);
 
