@@ -31,17 +31,32 @@ export const CONSTANT_WEAPON_MAP: Record<string, string> = {
   weaponbox_constant_5: '大雷斑',
 } as const;
 
-export const POOL_TYPES = {
-  SPECIAL: 'special',
-  WEAPON: 'weapon',
-  STANDARD: 'standard',
-  BEGINNER: 'beginner',
-} as const;
-
-export const RARITY = {
-  SIX_STAR: 6,
-  FIVE_STAR: 5,
-} as const;
+export const CONSTANT_WEAPONS: string[] = [
+  '艺术暴君',
+  '黯色火炬',
+  '领航者',
+  '作品：蚀迹',
+  '骑士精神',
+  '遗忘',
+  '爆破单元',
+  '沧溟星梦',
+  '同类相食',
+  '楔子',
+  'J.E.T.',
+  '骁勇',
+  '负山',
+  '破碎君王',
+  '昔日精品',
+  '典范',
+  '赫拉芬格',
+  '大雷斑',
+  '白夜新星',
+  '显赫声名',
+  '热熔切割器',
+  '扶摇',
+  '不知归',
+  '宏愿',
+] as const;
 
 export const AUTH_STATUS = {
   PENDING: 'pending',
