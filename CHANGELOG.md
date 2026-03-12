@@ -1,3 +1,9 @@
+## [1.18.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.18.3...v1.18.4) (2026-03-12)
+
+### 🐛 Bug Fixes
+
+* fix wrong gacha record ([57ec273](https://github.com/pynickle/koishi-plugin-endfield/commit/57ec27335cc95ece524d1bc2788e66aa077f6f54))
+
 ## [1.18.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.18.2...v1.18.3) (2026-03-06)
 
 ### 🐛 Bug Fixes
