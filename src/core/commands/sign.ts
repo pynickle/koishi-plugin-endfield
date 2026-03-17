@@ -1,5 +1,5 @@
 import { Config } from '../../config/config';
-import { signUser } from '../services/sign';
+import { formatSignStatsMessage, signAllUsers, signUser } from '../services/sign';
 import { Context, Session } from 'koishi';
 
 export async function endfieldSign(ctx: Context, session: Session, cfg: Config) {
@@ -24,5 +24,23 @@ export async function endfieldSign(ctx: Context, session: Session, cfg: Config) 
   } catch (error) {
     ctx.logger.error('Endfield sign error:', error);
     return session.text('endfield.networkError');
+  }
+}
+
+export async function endfieldSignAll(ctx: Context, session: Session, cfg: Config) {
+  try {
+    const stats = await signAllUsers(ctx, cfg);
+
+    if (stats.total === 0) {
+      return session.text('.noBoundUsers');
+    }
+
+    const statsMessage = formatSignStatsMessage(stats, '手动全部签到统计');
+    return session.text('.signAllResult', {
+      stats: statsMessage,
+    });
+  } catch (error) {
+    ctx.logger.error('Manual sign all error:', error);
+    return session.text('.signAllError');
   }
 }

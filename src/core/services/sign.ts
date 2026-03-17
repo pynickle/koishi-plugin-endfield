@@ -51,6 +51,22 @@ export async function signUser(ctx: Context, userId: string, cfg: Config): Promi
 }
 
 export async function autoSignAll(ctx: Context, cfg: Config): Promise<void> {
+  const stats = await signAllUsers(ctx, cfg);
+  const message = formatSignStatsMessage(stats, 'Endfield 自动签到统计');
+
+  if (!ctx.bots[0]) {
+    ctx.logger.warn('No bot instance available to send auto sign stats.');
+    return;
+  }
+
+  try {
+    await ctx.bots[0].sendPrivateMessage(cfg.adminQQ, message);
+  } catch (error) {
+    ctx.logger.error('Failed to send stats to admin:', error);
+  }
+}
+
+export async function signAllUsers(ctx: Context, cfg: Config): Promise<AutoSignStats> {
   const stats: AutoSignStats = {
     total: 0,
     success: 0,
@@ -75,25 +91,25 @@ export async function autoSignAll(ctx: Context, cfg: Config): Promise<void> {
         stats.failedUsers.push({ userId, message: result.message });
       }
     }
-
-    let message = `Endfield 自动签到统计：\n`;
-    message += `总用户数：${stats.total}\n`;
-    message += `成功：${stats.success}\n`;
-    message += `失败：${stats.failed}\n`;
-
-    if (stats.failed > 0) {
-      message += `失败用户：\n`;
-      stats.failedUsers.forEach(({ userId, message: failMsg }) => {
-        message += `- 用户 ID：${userId}，原因：${failMsg}\n`;
-      });
-    }
-
-    try {
-      await ctx.bots[0].sendPrivateMessage(cfg.adminQQ, message);
-    } catch (error) {
-      ctx.logger.error('Failed to send stats to admin:', error);
-    }
   } catch (error) {
     ctx.logger.error('Auto sign error:', error);
   }
+
+  return stats;
+}
+
+export function formatSignStatsMessage(stats: AutoSignStats, title: string): string {
+  let message = `${title}：\n`;
+  message += `总用户数：${stats.total}\n`;
+  message += `成功：${stats.success}\n`;
+  message += `失败：${stats.failed}\n`;
+
+  if (stats.failed > 0) {
+    message += '失败用户：\n';
+    stats.failedUsers.forEach(({ userId, message: failMsg }) => {
+      message += `- 用户 ID：${userId}，原因：${failMsg}\n`;
+    });
+  }
+
+  return message.trimEnd();
 }

@@ -7,7 +7,7 @@ import { endfieldNote } from './commands/note';
 import { endfieldProfile } from './commands/profile';
 import { endfieldQr } from './commands/qr';
 import { endfieldSetWeaponUp } from './commands/setweaponup';
-import { endfieldSign } from './commands/sign';
+import { endfieldSign, endfieldSignAll } from './commands/sign';
 import { endfieldStamina } from './commands/stamina';
 import {
   endfieldSubscribe,
@@ -20,6 +20,9 @@ import { Context } from 'koishi';
 export function registerCommands(ctx: Context, cfg: Config) {
   ctx.command('endfield.auth').action(async ({ session }) => endfieldAuth(ctx, session, cfg));
   ctx.command('endfield.sign').action(async ({ session }) => endfieldSign(ctx, session, cfg));
+  ctx
+    .command('endfield.signall', { authority: 4 })
+    .action(async ({ session }) => endfieldSignAll(ctx, session, cfg));
   ctx
     .command('endfield.char <charName>')
     .action(async ({ session }, charName) => endfieldChar(ctx, session, cfg, charName));

@@ -23,6 +23,14 @@
         "signSuccess": "签到成功！\n获得奖励：{awards}"
       }
     },
+    "endfield.signall": {
+      "description": "手动触发全部签到（管理员）",
+      "messages": {
+        "noBoundUsers": "当前没有已绑定用户，无需执行全量签到",
+        "signAllResult": "{stats}",
+        "signAllError": "手动全量签到失败，请查看日志"
+      }
+    },
     "endfield.char": {
       "description": "获取干员详情卡片",
       "messages": {

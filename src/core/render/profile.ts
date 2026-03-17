@@ -94,7 +94,7 @@ export async function generateProfileImage(
         background-color: #f5f7fa;
         font-family: Maple Mono NF CN, "Segoe UI", sans-serif;
         padding: 24px;
-        max-width: 1100px;
+        width: 1100px;
         margin: 0 auto;
       }
       .header-card {
