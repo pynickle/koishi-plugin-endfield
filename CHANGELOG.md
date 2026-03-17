@@ -1,3 +1,9 @@
+## [1.19.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.18.4...v1.19.0) (2026-03-17)
+
+### ✨ Features
+
+* add endfield profile ([d038a9b](https://github.com/pynickle/koishi-plugin-endfield/commit/d038a9bcd144389041bd1c8210ca0ed5b201e0ab))
+
 ## [1.18.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.18.3...v1.18.4) (2026-03-12)
 
 ### 🐛 Bug Fixes
