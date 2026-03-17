@@ -1,3 +1,17 @@
+## [1.20.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.19.0...v1.20.0) (2026-03-17)
+
+### ✨ Features
+
+* add sign all command ([8ca9b87](https://github.com/pynickle/koishi-plugin-endfield/commit/8ca9b8740414ed4f3ac55aee7c49b3dd60012b11))
+
+### 📚 Documentation
+
+* update readme for profile and sign all ([9c6e976](https://github.com/pynickle/koishi-plugin-endfield/commit/9c6e97635e3b583b8fc7be88f33d3eb3f4996ad3))
+
+### 🔧 Miscellaneous Changes
+
+* update deps ([4bc71d9](https://github.com/pynickle/koishi-plugin-endfield/commit/4bc71d976af00b962885e37ab1cd12343048244e))
+
 ## [1.19.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.18.4...v1.19.0) (2026-03-17)
 
 ### ✨ Features
