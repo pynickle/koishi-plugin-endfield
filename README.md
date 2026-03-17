@@ -58,9 +58,13 @@ endfield.auth
 
 ```
 endfield.sign
+endfield.signall
 ```
 
 执行此命令后，会尝试为当前用户进行签到，并返回签到结果。
+
+- `endfield.sign`：为当前用户签到
+- `endfield.signall`：手动触发全量签到（管理员权限）
 
 ### 3. 获取角色详情
 
@@ -70,7 +74,15 @@ endfield.char <角色名称>
 
 执行此命令后，会获取指定角色的详情卡片并发送。
 
-### 4. 获取干员列表
+### 4. 获取个人档案卡片
+
+```
+endfield.profile
+```
+
+执行此命令后，会获取当前绑定账号的个人档案卡片并发送。
+
+### 5. 获取干员列表
 
 ```
 endfield.note
@@ -78,7 +90,7 @@ endfield.note
 
 执行此命令后，会获取当前账号的干员列表，并生成精美卡片图片发送。
 
-### 5. 获取抽卡记录
+### 6. 获取抽卡记录
 
 ```
 endfield.gacha
@@ -90,7 +102,7 @@ endfield.gacha -n
 
 执行此命令后，会获取用户的抽卡记录，并生成一个包含抽卡统计和详情的 HTML 页面。
 
-### 6. 获取体力信息
+### 7. 获取体力信息
 
 ```
 endfield.stamina
@@ -98,7 +110,7 @@ endfield.stamina
 
 执行此命令后，会获取用户的体力和每日活跃度信息。
 
-### 7. 订阅每日活跃度提醒
+### 8. 订阅每日活跃度提醒
 
 ```
 endfield.subscribe <时间>
@@ -110,7 +122,7 @@ endfield.unsubscribe
 
 执行此命令后，会在指定时间检查用户的每日活跃度，如果未达标则提醒用户。
 
-### 8. 订阅体力恢复提醒
+### 9. 订阅体力恢复提醒
 
 ```
 endfield.stamina.subscribe <时间间隔>
@@ -122,7 +134,7 @@ endfield.stamina.unsubscribe
 
 执行此命令后，当体力即将恢复满时会提醒用户。
 
-### 9. 扫码登录
+### 10. 扫码登录
 
 ```
 endfield.qr
@@ -130,7 +142,7 @@ endfield.qr
 
 执行此命令后，会生成并发送登录二维码，用户扫描后完成登录，登录信息会自动保存到数据库中。
 
-### 10. 设置武器池 UP 武器
+### 11. 设置武器池 UP 武器
 
 ```
 endfield.setweaponup <poolId> <weaponName>
