@@ -69,7 +69,7 @@ export async function generateProfileImage(
       const medalName = medal.achievementData.name;
       const obtainDate = dayjs(Number(medal.obtainTs) * 1000).format('YYYY-MM-DD');
       return `
-         <div class="column is-6-mobile is-4-tablet is-one-fifth-desktop">
+         <div class="column is-one-fifth">
           <div class="badge-card has-text-centered">
             <figure class="image is-64x64 mx-auto mb-2">
               <img src="${cachedIcon}" alt="${medalName}" width="64" height="64" loading="eager">
