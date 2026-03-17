@@ -1,3 +1,9 @@
+## [1.20.1](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.0...v1.20.1) (2026-03-17)
+
+### 🐛 Bug Fixes
+
+* fix column in profile ([d50e5d3](https://github.com/pynickle/koishi-plugin-endfield/commit/d50e5d37eb53503db280f31e40a81157b7a1c2a4))
+
 ## [1.20.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.19.0...v1.20.0) (2026-03-17)
 
 ### ✨ Features
