@@ -12,6 +12,10 @@ export {
   type CharacterNote,
   type CharacterNoteDetail,
   type CharacterCard,
+  type AchievementMedalData,
+  type AchievementMedal,
+  type AchievementDisplay,
+  type AchievementData,
 } from './character';
 export {
   GachaApi,

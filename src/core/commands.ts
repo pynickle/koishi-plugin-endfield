@@ -4,6 +4,7 @@ import { endfieldAuth } from './commands/auth';
 import { endfieldChar } from './commands/char';
 import { endfieldGacha } from './commands/gacha';
 import { endfieldNote } from './commands/note';
+import { endfieldProfile } from './commands/profile';
 import { endfieldQr } from './commands/qr';
 import { endfieldSetWeaponUp } from './commands/setweaponup';
 import { endfieldSign } from './commands/sign';
@@ -23,6 +24,7 @@ export function registerCommands(ctx: Context, cfg: Config) {
     .command('endfield.char <charName>')
     .action(async ({ session }, charName) => endfieldChar(ctx, session, cfg, charName));
   ctx.command('endfield.note').action(async ({ session }) => endfieldNote(ctx, session, cfg));
+  ctx.command('endfield.profile').action(async ({ session }) => endfieldProfile(ctx, session, cfg));
   ctx
     .command('endfield.gacha')
     .option('noSync', '-n 不同步直接获取抽卡记录')

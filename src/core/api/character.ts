@@ -44,6 +44,43 @@ export interface CharacterNoteChar {
   };
 }
 
+export interface AchievementMedalData {
+  id: string;
+  name: string;
+  cate: string;
+  cateName: string;
+  initIcon: string;
+  platedIcon: string;
+  reforge2Icon: string;
+  reforge3Icon: string;
+}
+
+export interface AchievementMedal {
+  achievementData: AchievementMedalData;
+  isPlated: boolean;
+  level: number;
+  obtainTs: string;
+}
+
+export type AchievementDisplay = {
+  '1'?: string;
+  '2'?: string;
+  '3'?: string;
+  '4'?: string;
+  '5'?: string;
+  '6'?: string;
+  '7'?: string;
+  '8'?: string;
+  '9'?: string;
+  '10'?: string;
+};
+
+export interface AchievementData {
+  count: number;
+  display: AchievementDisplay;
+  achieveMedals: AchievementMedal[];
+}
+
 export interface CharacterNoteDetail extends CharacterNote {
   base: CharacterNoteBase;
   bpSystem?: {
@@ -61,6 +98,7 @@ export interface CharacterNoteDetail extends CharacterNote {
     max: string;
     maxTs: string;
   };
+  achieve?: AchievementData;
 }
 
 export interface CharacterCard {
