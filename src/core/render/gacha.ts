@@ -555,8 +555,13 @@ export async function generateGachaRecord(
           // Process version string
           const versionParts = versionData.version.split('_').map(Number);
           const verString = `VER ${versionParts[0]}.${versionParts[1]}`;
-          const upString =
-            versionData.version === '1_0_2' ? 'UP 3' : `UP ${(versionParts[2] + 1) / 2}`;
+          const upNumber =
+            versionData.version === '1_0_2'
+              ? 3
+              : versionData.version === '1_0_3'
+                ? 2
+                : versionParts[2];
+          const upString = `UP ${upNumber}`;
 
           // Get pool info for date range
           let dateRange = '202X.XX.XX - 202X.XX.XX';
