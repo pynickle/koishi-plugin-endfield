@@ -1,3 +1,9 @@
+## [1.20.3](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.2...v1.20.3) (2026-03-31)
+
+### 🐛 Bug Fixes
+
+* fix all special version number processing ([a0c5de1](https://github.com/pynickle/koishi-plugin-endfield/commit/a0c5de157f87008f209d940c0ee25ba70fae66a3))
+
 ## [1.20.2](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.1...v1.20.2) (2026-03-31)
 
 ### 🐛 Bug Fixes
