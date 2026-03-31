@@ -445,17 +445,16 @@ export async function generateGachaRecord(
     }
   });
 
+  const getSpecialPoolUpNumber = (version: string, parts: number[]) => {
+    if (version === '1_0_2') return 3;
+    if (version === '1_0_3') return 2;
+    return parts[2];
+  };
+
   // Sort versions in descending order
   const sortedVersions = Array.from(versionMap.values()).sort((a, b) => {
-    const getParts = (v) => {
-      if (v.parts[0] === 1 && v.parts[1] === 0 && v.parts[2] === 2) {
-        return [1, 0, 5];
-      }
-      return v.parts;
-    };
-
-    const aParts = getParts(a);
-    const bParts = getParts(b);
+    const aParts = [a.parts[0], a.parts[1], getSpecialPoolUpNumber(a.version, a.parts)];
+    const bParts = [b.parts[0], b.parts[1], getSpecialPoolUpNumber(b.version, b.parts)];
 
     for (let i = 0; i < 3; i++) {
       if (aParts[i] !== bParts[i]) {
@@ -555,12 +554,7 @@ export async function generateGachaRecord(
           // Process version string
           const versionParts = versionData.version.split('_').map(Number);
           const verString = `VER ${versionParts[0]}.${versionParts[1]}`;
-          const upNumber =
-            versionData.version === '1_0_2'
-              ? 3
-              : versionData.version === '1_0_3'
-                ? 2
-                : versionParts[2];
+          const upNumber = getSpecialPoolUpNumber(versionData.version, versionParts);
           const upString = `UP ${upNumber}`;
 
           // Get pool info for date range
