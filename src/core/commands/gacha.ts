@@ -1,8 +1,9 @@
+import { Context, Session } from 'koishi';
+
 import { Config } from '../../config/config';
 import { POLLING_CONFIG, SYNC_STATUS } from '../../constants';
 import { GachaApi, createApiClient, type GachaSyncStatus } from '../api';
 import { renderGachaRecord } from '../render/gacha';
-import { Context, Session } from 'koishi';
 
 async function fetchAllGachaRecords(
   ctx: Context,

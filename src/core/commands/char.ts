@@ -1,9 +1,10 @@
+import axios from 'axios';
+import { Context, Session } from 'koishi';
+
 import { Config } from '../../config/config';
 import { CharacterApi, createApiClient } from '../api';
 import { renderCharacterCard } from '../render/char';
 import { renderDetailedCharacterCard } from '../render/detailed-char';
-import axios from 'axios';
-import { Context, Session } from 'koishi';
 
 export async function endfieldChar(ctx: Context, session: Session, cfg: Config, charName: string) {
   try {

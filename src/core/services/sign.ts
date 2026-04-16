@@ -1,7 +1,8 @@
+import { Context } from 'koishi';
+
 import { Config } from '../../config/config';
 import type { SignResult, AutoSignStats } from '../../types';
 import { SignApi, createApiClient } from '../api';
-import { Context } from 'koishi';
 
 export async function signUser(ctx: Context, userId: string, cfg: Config): Promise<SignResult> {
   try {

@@ -1,9 +1,10 @@
+import dayjs from 'dayjs';
+import { Context } from 'koishi';
+
 import { Config } from '../../config/config';
 import { DATABASE_IDS } from '../../constants';
 import { AnnouncementApi, createApiClient } from '../api';
 import { renderAnnouncement } from '../render/announcement';
-import dayjs from 'dayjs';
-import { Context } from 'koishi';
 
 export async function checkAnnouncements(ctx: Context, cfg: Config) {
   try {

@@ -1,6 +1,7 @@
+import { Context, Session } from 'koishi';
+
 import { Config } from '../../config/config';
 import { formatSignStatsMessage, signAllUsers, signUser } from '../services/sign';
-import { Context, Session } from 'koishi';
 
 export async function endfieldSign(ctx: Context, session: Session, cfg: Config) {
   try {

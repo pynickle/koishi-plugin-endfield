@@ -1,7 +1,8 @@
+import dayjs from 'dayjs';
+import { Context } from 'koishi';
+
 import { cacheImages } from '../../utils/image-cache';
 import { CharacterNoteDetail, AchievementMedal } from '../api';
-import { Context } from 'koishi';
-import dayjs from 'dayjs';
 
 const cleanUrl = (url: string) => (url ? url.replace(/^<|>/g, '') : '');
 

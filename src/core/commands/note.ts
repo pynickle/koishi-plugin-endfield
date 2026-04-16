@@ -1,7 +1,8 @@
+import { Context, Session } from 'koishi';
+
 import { Config } from '../../config/config';
 import { CharacterApi, createApiClient } from '../api';
 import { renderOperatorList } from '../render/note';
-import { Context, Session } from 'koishi';
 
 function extractImageSrc(image: string) {
   const match = image.match(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/i);

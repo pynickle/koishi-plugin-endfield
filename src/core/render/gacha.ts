@@ -1,9 +1,10 @@
+import { Context } from 'koishi';
+
 import { Config } from '../../config/config';
+import { CONSTANT_WEAPON_MAP, CONSTANT_WEAPONS } from '../../constants';
 import { getDominantColor } from '../../utils/color-utils';
 import { createApiClient, GachaApi } from '../api';
 import { fetchAndSaveCharPools } from '../services/char-pools';
-import { Context } from 'koishi';
-import { CONSTANT_WEAPON_MAP, CONSTANT_WEAPONS } from '../../constants';
 
 interface GachaRecord {
   char_id: string;

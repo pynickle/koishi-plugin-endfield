@@ -1,8 +1,9 @@
+import { Context, Session } from 'koishi';
+
 import { Config } from '../../config/config';
 import { AnnouncementApi, createApiClient } from '../api';
 import { handleError, ApiError, NotFoundError, NetworkError } from '../errors';
 import { renderAnnouncement } from '../render/announcement';
-import { Context, Session } from 'koishi';
 
 export async function endfieldAnnouncement(ctx: Context, session: Session, cfg: Config) {
   try {

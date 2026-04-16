@@ -1,10 +1,11 @@
+import { Context } from 'koishi';
+
 import { Config } from '../config/config';
 import { CRON_SCHEDULES } from '../constants';
 import { checkAnnouncements } from './services/announcements';
 import { fetchAndSaveCharPools } from './services/char-pools';
 import { autoSignAll } from './services/sign';
 import { checkSubscriptions } from './services/subscribe';
-import { Context } from 'koishi';
 
 export function registerCronJobs(ctx: Context, cfg: Config) {
   ctx.cron(CRON_SCHEDULES.AUTO_SIGN, async () => {

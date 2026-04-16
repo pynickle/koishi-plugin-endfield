@@ -1,9 +1,10 @@
-import axios from 'axios';
 import { createHash } from 'crypto';
 import fs from 'fs/promises';
-import { Context } from 'koishi';
 import { tmpdir } from 'os';
 import { extname, join } from 'path';
+
+import axios from 'axios';
+import { Context } from 'koishi';
 
 const CACHE_DIR = join(tmpdir(), 'endfield-image-cache');
 

@@ -1,6 +1,7 @@
-import { Config } from '../../config/config';
 import axios from 'axios';
 import { Context, Session } from 'koishi';
+
+import { Config } from '../../config/config';
 
 export async function endfieldSetWeaponUp(
   ctx: Context,

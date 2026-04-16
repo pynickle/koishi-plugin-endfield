@@ -1,3 +1,5 @@
+import { Context } from 'koishi';
+
 import { Config } from '../config/config';
 import { endfieldAnnouncement } from './commands/announcement';
 import { endfieldAuth } from './commands/auth';
@@ -15,7 +17,6 @@ import {
   endfieldStaminaSubscribe,
   endfieldStaminaUnsubscribe,
 } from './commands/subscribe';
-import { Context } from 'koishi';
 
 export function registerCommands(ctx: Context, cfg: Config) {
   ctx.command('endfield.auth').action(async ({ session }) => endfieldAuth(ctx, session, cfg));

@@ -1,6 +1,7 @@
+import { Context } from 'koishi';
+
 import { cacheImage, cacheImages } from '../../utils/image-cache';
 import { CharacterNoteDetail } from '../api';
-import { Context } from 'koishi';
 
 const cleanUrl = (url: string) => (url ? url.replace(/^<|>/g, '') : '');
 

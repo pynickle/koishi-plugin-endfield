@@ -1,8 +1,9 @@
+import dayjs from 'dayjs';
+import { Context, h } from 'koishi';
+
 import { Config } from '../../config/config';
 import { parseCustomTime } from '../../utils/time-utils';
 import { StaminaApi, createApiClient } from '../api';
-import dayjs from 'dayjs';
-import { Context, h } from 'koishi';
 
 export async function checkSubscriptions(ctx: Context, cfg: Config) {
   try {

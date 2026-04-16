@@ -1,5 +1,6 @@
-import zhCN from './locales/zh-CN.json';
 import { Schema } from 'koishi';
+
+import zhCN from './locales/zh-CN.json';
 
 export interface Config {
   apiKey: string;

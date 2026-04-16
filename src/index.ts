@@ -1,11 +1,13 @@
+import { Context } from 'koishi';
+
 import { Config } from './config/config';
 import { registerCommands } from './core/commands';
 import { extendDatabase } from './core/database';
-import { registerCronJobs, initializeServices } from './core/scheduler';
+
 import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
+import { registerCronJobs, initializeServices } from './core/scheduler';
 import zhCN from './locales/zh-CN.json';
-import { Context } from 'koishi';
 
 export const name = 'endfield';
 

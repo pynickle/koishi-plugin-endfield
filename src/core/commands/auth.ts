@@ -1,9 +1,10 @@
+import dayjs from 'dayjs';
+import { Context, Session } from 'koishi';
+
 import { Config } from '../../config/config';
 import { AUTH_CONFIG, POLLING_CONFIG, AUTH_STATUS } from '../../constants';
 import { createTextMsg } from '../../utils/cqcode-utils';
 import { AuthApi, createApiClient } from '../api';
-import dayjs from 'dayjs';
-import { Context, Session } from 'koishi';
 
 export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) {
   try {

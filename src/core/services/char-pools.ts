@@ -1,7 +1,8 @@
-import { Config } from '../../config/config';
-import { getDominantColor } from '../../utils/color-utils';
 import axios from 'axios';
 import { Context } from 'koishi';
+
+import { Config } from '../../config/config';
+import { getDominantColor } from '../../utils/color-utils';
 
 export async function fetchAndSaveCharPools(ctx: Context, cfg: Config): Promise<void> {
   try {

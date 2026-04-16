@@ -1,10 +1,11 @@
-import axios from 'axios';
-import ColorThief from 'colorthief';
 import fs from 'fs/promises';
-import { Context } from 'koishi';
+import { randomUUID } from 'node:crypto';
 import { tmpdir } from 'os';
 import { join, extname } from 'path';
-import { randomUUID } from 'node:crypto';
+
+import axios from 'axios';
+import { getColor } from 'colorthief';
+import { Context } from 'koishi';
 
 export async function getDominantColor(
   ctx: Context,
@@ -31,7 +32,7 @@ export async function getDominantColor(
 
     await fs.writeFile(tempPath, buffer);
 
-    const color = await ColorThief.getColor(tempPath, quality);
+    const color = await getColor(tempPath, { quality });
 
     return `#${color[0].toString(16).padStart(2, '0')}${color[1].toString(16).padStart(2, '0')}${color[2].toString(16).padStart(2, '0')}`;
   } catch (err) {
