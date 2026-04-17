@@ -638,7 +638,7 @@ export async function generateGachaRecord(
             const endDate = formatDate(poolInfo.pool_end_at_ts);
             dateRange = `${startDate} - ${endDate}`;
 
-            dominantColor = poolInfo.dominant_color;
+            dominantColor = poolInfo.dominant_color || dominantColor;
           }
 
           const content = [];

@@ -11,7 +11,7 @@ export async function getDominantColor(
   ctx: Context,
   imageUrl: string,
   quality: number = 10
-): Promise<string> {
+): Promise<string | null> {
   if (!imageUrl) return null;
 
   let tempPath: string | null = null;
@@ -33,8 +33,12 @@ export async function getDominantColor(
     await fs.writeFile(tempPath, buffer);
 
     const color = await getColor(tempPath, { quality });
+    if (!color) {
+      ctx.logger.warn(`Failed to get dominant color (${imageUrl}): extractor returned null`);
+      return null;
+    }
 
-    return `#${color[0].toString(16).padStart(2, '0')}${color[1].toString(16).padStart(2, '0')}${color[2].toString(16).padStart(2, '0')}`;
+    return color.hex();
   } catch (err) {
     ctx.logger.error(`Failed to get Dominate Color (${imageUrl}):`, err);
     return null;

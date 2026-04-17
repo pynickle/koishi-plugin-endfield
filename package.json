@@ -43,7 +43,6 @@
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/npm": "^13.1.5",
     "@semantic-release/release-notes-generator": "^14.1.0",
-    "@types/colorthief": "^2.6.1",
     "@types/node": "^24.12.2",
     "conventional-changelog-conventionalcommits": "^9.3.1",
     "esbuild": "^0.28.0",
