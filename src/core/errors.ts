@@ -187,7 +187,9 @@ export async function sendReplyImage(
   extractImageSrc: (image: string) => string = () => '',
   metadata?: ErrorMetadata
 ) {
-  const imageSrc = extractImageSrc(image) || image;
+  const extractedImageSrc = extractImageSrc(image);
+  const htmlImageMatch = image.match(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/i);
+  const imageSrc = extractedImageSrc || htmlImageMatch?.[1] || image;
 
   if (!session.onebot || !session.messageId || !imageSrc) {
     return false;
