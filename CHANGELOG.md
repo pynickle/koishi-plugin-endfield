@@ -1,3 +1,9 @@
+## [1.20.6](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.5...v1.20.6) (2026-04-17)
+
+### 🚀 Improvements
+
+* improve delete msg ([937793d](https://github.com/pynickle/koishi-plugin-endfield/commit/937793d35bf75edf3533184ada5e1a18aa48afc8))
+
 ## [1.20.5](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.4...v1.20.5) (2026-04-17)
 
 ### 🐛 Bug Fixes
