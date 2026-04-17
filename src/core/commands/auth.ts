@@ -5,6 +5,7 @@ import { Config } from '../../config/config';
 import { AUTH_CONFIG, POLLING_CONFIG, AUTH_STATUS } from '../../constants';
 import { createTextMsg } from '../../utils/cqcode-utils';
 import { AuthApi, createApiClient } from '../api';
+import { logPluginError, tryDeleteOnebotMessage } from '../errors';
 
 export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) {
   try {
@@ -44,9 +45,10 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
 
         if (pollingAttempts > POLLING_CONFIG.AUTH_MAX_ATTEMPTS) {
           clearInterval(pollingInterval);
-          if (session.onebot) {
-            await session.onebot.deleteMsg(authUrlMsgId);
-          }
+          await tryDeleteOnebotMessage(ctx, session, authUrlMsgId, {
+            command: 'endfield.auth',
+            phase: 'timeout',
+          });
           resolve(session.text('.authExpiredError'));
           return;
         }
@@ -70,9 +72,11 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
                 },
               ]);
 
-              if (session.onebot) {
-                await session.onebot.deleteMsg(authUrlMsgId);
-              }
+              await tryDeleteOnebotMessage(ctx, session, authUrlMsgId, {
+                command: 'endfield.auth',
+                phase: 'approved',
+                requestId: request_id,
+              });
 
               const successText = session.text('.authSuccess', {
                 userNickname: user_info.nickname,
@@ -81,26 +85,41 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
               });
               resolve(successText);
             } catch (error) {
-              ctx.logger.error('Endfield bind error:', error);
+              logPluginError(ctx, 'endfield.auth failed while saving binding', error, {
+                requestId: request_id,
+                userId: session.userId,
+              });
               resolve(session.text('endfield.networkError'));
             }
           } else if (status === AUTH_STATUS.REJECTED) {
             clearInterval(pollingInterval);
+            await tryDeleteOnebotMessage(ctx, session, authUrlMsgId, {
+              command: 'endfield.auth',
+              phase: 'rejected',
+              requestId: request_id,
+            });
             resolve(session.text('.authRejectedError'));
           } else if (status === AUTH_STATUS.EXPIRED) {
             clearInterval(pollingInterval);
-            if (session.onebot) {
-              await session.onebot.deleteMsg(authUrlMsgId);
-            }
+            await tryDeleteOnebotMessage(ctx, session, authUrlMsgId, {
+              command: 'endfield.auth',
+              phase: 'expired',
+              requestId: request_id,
+            });
             resolve(session.text('.authExpiredError'));
           }
         } catch (error) {
-          ctx.logger.error('Polling error:', error);
+          logPluginError(ctx, 'endfield.auth polling failed', error, {
+            requestId: request_id,
+            userId: session.userId,
+          });
         }
       }, POLLING_CONFIG.AUTH_POLLING_INTERVAL);
     });
   } catch (error) {
-    ctx.logger.error('Endfield bind error:', error);
+    logPluginError(ctx, 'endfield.auth failed', error, {
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }

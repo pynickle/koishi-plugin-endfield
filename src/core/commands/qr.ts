@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
+import { logPluginError, tryDeleteOnebotMessage } from '../errors';
 
 export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
   try {
@@ -75,6 +76,11 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
         const statusData = statusResponse.data;
         if (statusData.code !== 0) {
           clearInterval(pollInterval);
+          await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+            command: 'endfield.qr',
+            phase: 'status-error',
+            target: 'qr',
+          });
           await session.send(
             session.text('commands.endfield.qr.messages.statusError', {
               message: statusData.message,
@@ -103,6 +109,11 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
 
           const confirmData = confirmResponse.data;
           if (confirmData.code !== 0) {
+            await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+              command: 'endfield.qr',
+              phase: 'confirm-error',
+              target: 'qr',
+            });
             await session.send(
               session.text('commands.endfield.qr.messages.confirmError', {
                 message: confirmData.message,
@@ -140,9 +151,10 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
 
           const bindingData = bindingResponse.data;
           if (bindingData.code !== 0) {
-            if (session.onebot) {
-              await session.onebot.deleteMsg(bindingInfoMsgId);
-            }
+            await tryDeleteOnebotMessage(ctx, session, bindingInfoMsgId, {
+              command: 'endfield.qr',
+              phase: 'binding-error',
+            });
             await session.send(
               session.text('commands.endfield.qr.messages.bindingError', {
                 message: bindingData.message,
@@ -154,9 +166,10 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
           const bindingList = bindingData.data.bindingList;
 
           if (!bindingList || bindingList.length === 0) {
-            if (session.onebot) {
-              await session.onebot.deleteMsg(bindingInfoMsgId);
-            }
+            await tryDeleteOnebotMessage(ctx, session, bindingInfoMsgId, {
+              command: 'endfield.qr',
+              phase: 'no-binding-info',
+            });
             await session.send(session.text('commands.endfield.qr.messages.noBindingInfo'));
             return;
           }
@@ -182,10 +195,16 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
           ]);
 
           // Step 7: Delete messages after login
-          if (session.onebot) {
-            await session.onebot.deleteMsg(qrMsgId);
-            await session.onebot.deleteMsg(bindingInfoMsgId);
-          }
+          await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+            command: 'endfield.qr',
+            phase: 'success-cleanup',
+            target: 'qr',
+          });
+          await tryDeleteOnebotMessage(ctx, session, bindingInfoMsgId, {
+            command: 'endfield.qr',
+            phase: 'success-cleanup',
+            target: 'binding-info',
+          });
 
           await session.send(
             session.text('commands.endfield.qr.messages.loginSuccess', {
@@ -195,16 +214,30 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
           );
         } else if (status === 'expired') {
           clearInterval(pollInterval);
+          await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+            command: 'endfield.qr',
+            phase: 'expired',
+            target: 'qr',
+          });
           await session.send(session.text('commands.endfield.qr.messages.qrExpired'));
         }
       } catch (error) {
         clearInterval(pollInterval);
-        ctx.logger.error('QR login error:', error);
+        await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+          command: 'endfield.qr',
+          phase: 'polling-exception',
+          target: 'qr',
+        });
+        logPluginError(ctx, 'endfield.qr polling failed', error, {
+          userId: session.userId,
+        });
         await session.send(session.text('commands.endfield.qr.messages.loginError'));
       }
     }, 2000);
   } catch (error) {
-    ctx.logger.error('Endfield QR login error:', error);
+    logPluginError(ctx, 'endfield.qr failed', error, {
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }

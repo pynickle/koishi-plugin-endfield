@@ -3,6 +3,7 @@ import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
 import { CharacterApi, createApiClient } from '../api';
+import { logPluginError } from '../errors';
 import { renderCharacterCard } from '../render/char';
 import { renderDetailedCharacterCard } from '../render/detailed-char';
 
@@ -51,7 +52,10 @@ export async function endfieldChar(ctx: Context, session: Session, cfg: Config, 
 
     return renderCharacterCard(ctx, cardData);
   } catch (error) {
-    ctx.logger.error('Endfield card error:', error);
+    logPluginError(ctx, 'endfield.char failed', error, {
+      charName,
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }

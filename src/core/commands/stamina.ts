@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
+import { logPluginError } from '../errors';
 
 export async function endfieldStamina(ctx: Context, session: Session, cfg: Config) {
   try {
@@ -47,7 +48,9 @@ export async function endfieldStamina(ctx: Context, session: Session, cfg: Confi
       fullTime: formattedTime,
     });
   } catch (error) {
-    ctx.logger.error('Endfield stamina error:', error);
+    logPluginError(ctx, 'endfield.stamina failed', error, {
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }

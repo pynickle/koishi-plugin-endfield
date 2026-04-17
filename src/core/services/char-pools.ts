@@ -3,6 +3,7 @@ import { Context } from 'koishi';
 
 import { Config } from '../../config/config';
 import { getDominantColor } from '../../utils/color-utils';
+import { logPluginError } from '../errors';
 
 export async function fetchAndSaveCharPools(ctx: Context, cfg: Config): Promise<void> {
   try {
@@ -16,7 +17,9 @@ export async function fetchAndSaveCharPools(ctx: Context, cfg: Config): Promise<
     const charPoolsData = charPoolsResponse.data;
 
     if (charPoolsData.code !== 0) {
-      ctx.logger.error('Failed to fetch char pools:', charPoolsData.message);
+      logPluginError(ctx, 'Character pool API returned an error response', charPoolsData, {
+        apiMessage: charPoolsData.message,
+      });
       return;
     }
 
@@ -67,11 +70,13 @@ export async function fetchAndSaveCharPools(ctx: Context, cfg: Config): Promise<
         await ctx.database.upsert('endfield_char_pools_v2', upsertPools);
       }
     } catch (error) {
-      ctx.logger.error(`Failed to save char pool:`, error);
+      logPluginError(ctx, 'Failed to save character pools', error, {
+        poolCount: charPools.length,
+      });
     }
 
     ctx.logger.info(`Successfully fetched and saved ${charPools.length} char pools`);
   } catch (error) {
-    ctx.logger.error('Error in fetchAndSaveCharPools:', error);
+    logPluginError(ctx, 'Failed to fetch character pools', error);
   }
 }

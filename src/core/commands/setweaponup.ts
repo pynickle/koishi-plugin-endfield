@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
+import { logPluginError } from '../errors';
 
 export async function endfieldSetWeaponUp(
   ctx: Context,
@@ -65,7 +66,11 @@ export async function endfieldSetWeaponUp(
       poolName: weaponPoolData.pool_name,
     });
   } catch (error) {
-    ctx.logger.error('Error setting weapon up:', error);
+    logPluginError(ctx, 'endfield.setweaponup failed', error, {
+      poolId,
+      userId: session.userId,
+      weaponName,
+    });
     return session.text('commands.endfield.setweaponup.messages.error', {
       message: error instanceof Error ? error.message : 'Unknown error',
     });

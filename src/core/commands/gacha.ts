@@ -3,6 +3,7 @@ import { Context, Session } from 'koishi';
 import { Config } from '../../config/config';
 import { POLLING_CONFIG, SYNC_STATUS } from '../../constants';
 import { GachaApi, createApiClient, type GachaSyncStatus } from '../api';
+import { logPluginError, sendReplyImage, tryDeleteOnebotMessage } from '../errors';
 import { renderGachaRecord } from '../render/gacha';
 
 async function fetchAllGachaRecords(
@@ -40,7 +41,7 @@ async function syncGachaRecords(
   frameworkToken: string,
   charPools: any[],
   syncMsgId: string | number
-): Promise<string> {
+): Promise<string | void> {
   const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
   const gachaApi = new GachaApi(api);
 
@@ -49,16 +50,17 @@ async function syncGachaRecords(
   let pollingInterval: string | number | NodeJS.Timeout;
   let pollingAttempts = 0;
 
-  return new Promise<string>((resolve) => {
+  return new Promise<string | void>((resolve) => {
     pollingInterval = setInterval(async () => {
       pollingAttempts++;
 
       if (pollingAttempts > POLLING_CONFIG.GACHA_MAX_ATTEMPTS) {
         clearInterval(pollingInterval);
 
-        if (session.onebot) {
-          await session.onebot.deleteMsg(syncMsgId);
-        }
+        await tryDeleteOnebotMessage(ctx, session, syncMsgId, {
+          command: 'endfield.gacha',
+          phase: 'sync-timeout',
+        });
         resolve(session.text('.syncTimeout'));
         return;
       }
@@ -71,14 +73,31 @@ async function syncGachaRecords(
 
           ctx.logger.info('Gacha sync completed:', syncStatus.status);
 
-          if (session.onebot) {
-            await session.onebot.deleteMsg(syncMsgId);
-          }
+          await tryDeleteOnebotMessage(ctx, session, syncMsgId, {
+            command: 'endfield.gacha',
+            phase: 'sync-completed',
+          });
 
           try {
             const allRecordsData = await fetchAllGachaRecords(ctx, cfg, frameworkToken);
-            resolve(await renderGachaRecord(ctx, cfg, allRecordsData, charPools));
+            const image = await renderGachaRecord(ctx, cfg, allRecordsData, charPools);
+
+            if (
+              await sendReplyImage(ctx, session, image, undefined, {
+                command: 'endfield.gacha',
+                phase: 'sync-completed',
+              })
+            ) {
+              resolve();
+              return;
+            }
+
+            resolve(image);
           } catch (error) {
+            logPluginError(ctx, 'endfield.gacha failed while rendering synced records', error, {
+              phase: 'sync-completed',
+              userId: session.userId,
+            });
             resolve(
               session.text('.recordsError', {
                 message: error instanceof Error ? error.message : 'Unknown error',
@@ -88,9 +107,10 @@ async function syncGachaRecords(
         } else if (syncStatus.status === SYNC_STATUS.FAILED) {
           clearInterval(pollingInterval);
 
-          if (session.onebot) {
-            await session.onebot.deleteMsg(syncMsgId);
-          }
+          await tryDeleteOnebotMessage(ctx, session, syncMsgId, {
+            command: 'endfield.gacha',
+            phase: 'sync-failed',
+          });
 
           resolve(
             session.text('.syncFailed', {
@@ -99,7 +119,9 @@ async function syncGachaRecords(
           );
         }
       } catch (error) {
-        ctx.logger.error('Polling gacha sync status error:', error);
+        logPluginError(ctx, 'endfield.gacha polling failed', error, {
+          userId: session.userId,
+        });
       }
     }, POLLING_CONFIG.GACHA_POLLING_INTERVAL);
   });
@@ -172,22 +194,41 @@ export async function endfieldGacha(
             syncMsgId
           );
 
-          if (session.onebot) {
-            await session.onebot.deleteMsg(noRecordsMsgId);
-          }
+          await tryDeleteOnebotMessage(ctx, session, noRecordsMsgId, {
+            command: 'endfield.gacha',
+            phase: 'no-records-fallback',
+          });
 
           return result;
         }
 
-        return await renderGachaRecord(ctx, cfg, allRecordsData, charPools);
+        const image = await renderGachaRecord(ctx, cfg, allRecordsData, charPools);
+
+        if (
+          await sendReplyImage(ctx, session, image, undefined, {
+            command: 'endfield.gacha',
+            phase: options.noSync ? 'no-sync' : 'direct',
+          })
+        ) {
+          return;
+        }
+
+        return image;
       } catch (error) {
+        logPluginError(ctx, 'endfield.gacha failed while fetching local records', error, {
+          userId: session.userId,
+          noSync: true,
+        });
         return session.text('.recordsError', {
           message: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     }
   } catch (error) {
-    ctx.logger.error('Endfield gacha error:', error);
+    logPluginError(ctx, 'endfield.gacha failed', error, {
+      userId: session.userId,
+      noSync: !!options.noSync,
+    });
     return session.text('endfield.networkError');
   }
 }

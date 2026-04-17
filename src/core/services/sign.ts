@@ -3,6 +3,7 @@ import { Context } from 'koishi';
 import { Config } from '../../config/config';
 import type { SignResult, AutoSignStats } from '../../types';
 import { SignApi, createApiClient } from '../api';
+import { logPluginError } from '../errors';
 
 export async function signUser(ctx: Context, userId: string, cfg: Config): Promise<SignResult> {
   try {
@@ -43,7 +44,9 @@ export async function signUser(ctx: Context, userId: string, cfg: Config): Promi
       awards: awards,
     };
   } catch (error) {
-    ctx.logger.error('Endfield sign error:', error);
+    logPluginError(ctx, 'endfield.sign service failed', error, {
+      userId,
+    });
     return {
       success: false,
       message: '网络错误',
@@ -63,7 +66,9 @@ export async function autoSignAll(ctx: Context, cfg: Config): Promise<void> {
   try {
     await ctx.bots[0].sendPrivateMessage(cfg.adminQQ, message);
   } catch (error) {
-    ctx.logger.error('Failed to send stats to admin:', error);
+    logPluginError(ctx, 'Failed to send auto sign stats to admin', error, {
+      adminQQ: cfg.adminQQ,
+    });
   }
 }
 
@@ -93,7 +98,7 @@ export async function signAllUsers(ctx: Context, cfg: Config): Promise<AutoSignS
       }
     }
   } catch (error) {
-    ctx.logger.error('Auto sign error:', error);
+    logPluginError(ctx, 'endfield.signall service failed', error);
   }
 
   return stats;

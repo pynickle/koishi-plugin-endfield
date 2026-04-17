@@ -4,11 +4,12 @@ import { Context, h } from 'koishi';
 import { Config } from '../../config/config';
 import { parseCustomTime } from '../../utils/time-utils';
 import { StaminaApi, createApiClient } from '../api';
+import { logPluginError } from '../errors';
 
 export async function checkSubscriptions(ctx: Context, cfg: Config) {
-  try {
-    const currentTime = dayjs().format('HH:mm');
+  const currentTime = dayjs().format('HH:mm');
 
+  try {
     const activitySubscriptions = await ctx.database.get('endfield_subscriptions', {});
     const staminaSubscriptions = await ctx.database.get('endfield_stamina_subscriptions', {});
 
@@ -40,7 +41,9 @@ export async function checkSubscriptions(ctx: Context, cfg: Config) {
       await checkUserSubscriptions(ctx, cfg, user_id, subs);
     }
   } catch (error) {
-    ctx.logger.error('Check subscriptions error:', error);
+    logPluginError(ctx, 'Subscription check failed', error, {
+      currentTime,
+    });
   }
 }
 
@@ -105,7 +108,11 @@ async function checkUserSubscriptions(
       }
     }
   } catch (error) {
-    ctx.logger.error('Check user subscriptions error:', error);
+    logPluginError(ctx, 'User subscription check failed', error, {
+      hasActivitySubscription: !!subs.activity,
+      hasStaminaSubscription: !!subs.stamina,
+      userId: user_id,
+    });
   }
 }
 

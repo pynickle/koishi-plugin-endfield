@@ -4,6 +4,7 @@ import { Context } from 'koishi';
 import { Config } from '../../config/config';
 import { DATABASE_IDS } from '../../constants';
 import { AnnouncementApi, createApiClient } from '../api';
+import { logPluginError, logPluginWarn } from '../errors';
 import { renderAnnouncement } from '../render/announcement';
 
 export async function checkAnnouncements(ctx: Context, cfg: Config) {
@@ -14,13 +15,13 @@ export async function checkAnnouncements(ctx: Context, cfg: Config) {
     const announcements = await announcementApi.getList();
 
     if (!announcements || !Array.isArray(announcements)) {
-      ctx.logger.error('Invalid announcements data');
+      logPluginError(ctx, 'Announcement API returned invalid data', announcements);
       return;
     }
 
     const validAnnouncements = announcements.filter((ann) => ann.item_id);
     if (validAnnouncements.length === 0) {
-      ctx.logger.error('No valid announcement found');
+      logPluginError(ctx, 'Announcement list contained no valid items', announcements);
       return;
     }
 
@@ -57,13 +58,17 @@ export async function checkAnnouncements(ctx: Context, cfg: Config) {
       await saveLatestAnnouncementId(ctx, latestAnnouncement.item_id);
     } else if (!foundLast) {
       await saveLatestAnnouncementId(ctx, latestAnnouncement.item_id);
-      ctx.logger.warn(
-        'Last saved announcement ID not found, saved latest:',
-        latestAnnouncement.item_id
+      logPluginWarn(
+        ctx,
+        'Last saved announcement ID was missing from the latest feed. Saved the newest announcement id.',
+        latestAnnouncement.item_id,
+        {
+          previousAnnouncementId: lastAnnouncementId,
+        }
       );
     }
   } catch (error) {
-    ctx.logger.error('Check announcements error:', error);
+    logPluginError(ctx, 'Announcement check failed', error);
   }
 }
 
@@ -97,12 +102,17 @@ async function handleNewAnnouncement(ctx: Context, cfg: Config, announcement: an
       try {
         await ctx.bots[0].sendMessage(groupId, announcementImage);
       } catch (error) {
-        ctx.logger.error(`Send announcement to group ${groupId} error:`, error);
+        logPluginError(ctx, 'Failed to send announcement to group', error, {
+          announcementId: announcement.item_id,
+          groupId,
+        });
       }
     }
 
     ctx.logger.info('New announcement sent:', announcement.item_id);
   } catch (error) {
-    ctx.logger.error('Handle new announcement error:', error);
+    logPluginError(ctx, 'Failed to handle new announcement', error, {
+      announcementId: announcement.item_id,
+    });
   }
 }

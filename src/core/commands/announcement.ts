@@ -2,7 +2,7 @@ import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
 import { AnnouncementApi, createApiClient } from '../api';
-import { handleError, ApiError, NotFoundError, NetworkError } from '../errors';
+import { ApiError, NotFoundError, logPluginError } from '../errors';
 import { renderAnnouncement } from '../render/announcement';
 
 export async function endfieldAnnouncement(ctx: Context, session: Session, cfg: Config) {
@@ -24,7 +24,9 @@ export async function endfieldAnnouncement(ctx: Context, session: Session, cfg: 
       return session.text('.announcementNotFound');
     }
 
-    ctx.logger.error('Endfield announcement error:', error);
+    logPluginError(ctx, 'endfield.announcement failed', error, {
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }

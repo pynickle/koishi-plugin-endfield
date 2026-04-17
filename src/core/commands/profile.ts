@@ -2,6 +2,7 @@ import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
 import { CharacterApi, createApiClient } from '../api';
+import { logPluginError, logPluginWarn, sendReplyImage } from '../errors';
 import { renderProfileImage } from '../render/profile';
 
 function extractImageSrc(image: string) {
@@ -18,7 +19,16 @@ export async function endfieldProfile(ctx: Context, session: Session, cfg: Confi
           emoji_id: 147,
         });
       } catch (error) {
-        ctx.logger.warn('Failed to set msg emoji like:', error);
+        logPluginWarn(
+          ctx,
+          'Failed to set message emoji like. Continuing without interruption.',
+          error,
+          {
+            command: 'endfield.profile',
+            messageId: session.messageId,
+            userId: session.userId,
+          }
+        );
       }
     }
 
@@ -36,22 +46,19 @@ export async function endfieldProfile(ctx: Context, session: Session, cfg: Confi
 
     const noteData = await characterApi.getNote(frameworkToken);
     const image = await renderProfileImage(ctx, noteData);
-    const imageSrc = extractImageSrc(image) || image;
-
-    if (session.onebot && session.messageId && imageSrc) {
-      const reply = { type: 'reply', data: { id: session.messageId } };
-      const imageMsg = { type: 'image', data: { file: imageSrc } };
-      if (session.guildId) {
-        await session.onebot.sendGroupMsg(session.guildId, [reply, imageMsg]);
-        return;
-      }
-      await session.onebot.sendPrivateMsg(session.userId, [reply, imageMsg]);
+    if (
+      await sendReplyImage(ctx, session, image, extractImageSrc, {
+        command: 'endfield.profile',
+      })
+    ) {
       return;
     }
 
     return image;
   } catch (error) {
-    ctx.logger.error('Endfield profile error:', error);
+    logPluginError(ctx, 'endfield.profile failed', error, {
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }

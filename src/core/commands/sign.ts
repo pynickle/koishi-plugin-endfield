@@ -1,6 +1,7 @@
 import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
+import { logPluginError } from '../errors';
 import { formatSignStatsMessage, signAllUsers, signUser } from '../services/sign';
 
 export async function endfieldSign(ctx: Context, session: Session, cfg: Config) {
@@ -23,7 +24,9 @@ export async function endfieldSign(ctx: Context, session: Session, cfg: Config) 
       awards: result.awards || '',
     });
   } catch (error) {
-    ctx.logger.error('Endfield sign error:', error);
+    logPluginError(ctx, 'endfield.sign failed', error, {
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }
@@ -41,7 +44,9 @@ export async function endfieldSignAll(ctx: Context, session: Session, cfg: Confi
       stats: statsMessage,
     });
   } catch (error) {
-    ctx.logger.error('Manual sign all error:', error);
+    logPluginError(ctx, 'endfield.signall failed', error, {
+      userId: session.userId,
+    });
     return session.text('.signAllError');
   }
 }

@@ -3,6 +3,7 @@ import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
 import { parseCustomTime } from '../../utils/time-utils';
+import { logPluginError } from '../errors';
 
 export async function endfieldSubscribe(ctx: Context, session: Session, cfg: Config, time: string) {
   try {
@@ -44,7 +45,10 @@ export async function endfieldSubscribe(ctx: Context, session: Session, cfg: Con
       });
     }
   } catch (error) {
-    ctx.logger.error('Endfield subscribe error:', error);
+    logPluginError(ctx, 'endfield.subscribe failed', error, {
+      time,
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }
@@ -60,7 +64,9 @@ export async function endfieldUnsubscribe(ctx: Context, session: Session, cfg: C
     await ctx.database.remove('endfield_subscriptions', session.userId);
     return session.text('.unsubscribeSuccess');
   } catch (error) {
-    ctx.logger.error('Endfield unsubscribe error:', error);
+    logPluginError(ctx, 'endfield.unsubscribe failed', error, {
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }
@@ -127,7 +133,11 @@ export async function endfieldStaminaSubscribe(
       });
     }
   } catch (error) {
-    ctx.logger.error('Endfield stamina subscribe error:', error);
+    logPluginError(ctx, 'endfield.stamina.subscribe failed', error, {
+      duration,
+      reminder_interval,
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }
@@ -146,7 +156,9 @@ export async function endfieldStaminaUnsubscribe(ctx: Context, session: Session,
     await ctx.database.remove('endfield_stamina_subscriptions', session.userId);
     return session.text('.unsubscribeSuccess');
   } catch (error) {
-    ctx.logger.error('Endfield stamina unsubscribe error:', error);
+    logPluginError(ctx, 'endfield.stamina.unsubscribe failed', error, {
+      userId: session.userId,
+    });
     return session.text('endfield.networkError');
   }
 }

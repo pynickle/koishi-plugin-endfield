@@ -7,6 +7,8 @@ import axios from 'axios';
 import { getColor } from 'colorthief';
 import { Context } from 'koishi';
 
+import { logPluginError, logPluginWarn } from '../core/errors';
+
 export async function getDominantColor(
   ctx: Context,
   imageUrl: string,
@@ -40,14 +42,19 @@ export async function getDominantColor(
 
     return color.hex();
   } catch (err) {
-    ctx.logger.error(`Failed to get Dominate Color (${imageUrl}):`, err);
+    logPluginError(ctx, 'Failed to extract dominant color', err, {
+      imageUrl,
+      quality,
+    });
     return null;
   } finally {
     if (tempPath) {
       try {
         await fs.unlink(tempPath);
       } catch (unlinkErr) {
-        ctx.logger.warn(`Failed to remove temp dir (${tempPath}):`, unlinkErr);
+        logPluginWarn(ctx, 'Failed to remove temporary image file. Continuing cleanup.', unlinkErr, {
+          tempPath,
+        });
       }
     }
   }

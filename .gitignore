@@ -19,3 +19,5 @@ tsconfig.tsbuildinfo
 
 /.sisyphus/
 /logs/
+
+AGENTS.md
