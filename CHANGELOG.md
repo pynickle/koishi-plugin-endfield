@@ -1,3 +1,9 @@
+## [1.20.7](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.6...v1.20.7) (2026-04-17)
+
+### 🐛 Bug Fixes
+
+* fix reply error ([a0167ed](https://github.com/pynickle/koishi-plugin-endfield/commit/a0167ed78773b5d4fb7ea2a74b70f4ccb807e22b))
+
 ## [1.20.6](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.5...v1.20.6) (2026-04-17)
 
 ### 🚀 Improvements
