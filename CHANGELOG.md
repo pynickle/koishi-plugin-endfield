@@ -1,3 +1,9 @@
+## [1.20.5](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.4...v1.20.5) (2026-04-17)
+
+### 🐛 Bug Fixes
+
+* fix dominant color error ([1b75ec7](https://github.com/pynickle/koishi-plugin-endfield/commit/1b75ec71d2da9981d962e35c82c5e39e8d37ba5f))
+
 ## [1.20.4](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.3...v1.20.4) (2026-04-16)
 
 ### 🔧 Miscellaneous Changes
