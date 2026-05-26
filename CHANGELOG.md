@@ -1,3 +1,9 @@
+## [1.21.0](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.7...v1.21.0) (2026-05-26)
+
+### ✨ Features
+
+* move to satori ([7b7dc18](https://github.com/pynickle/koishi-plugin-endfield/commit/7b7dc18eba46c666564d6ec80dc65abf4d991397))
+
 ## [1.20.7](https://github.com/pynickle/koishi-plugin-endfield/compare/v1.20.6...v1.20.7) (2026-04-17)
 
 ### 🐛 Bug Fixes
