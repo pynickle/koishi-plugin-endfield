@@ -5,6 +5,7 @@ import { Config } from '../../config/config';
 import { parseCustomTime } from '../../utils/time-utils';
 import { StaminaApi, createApiClient } from '../api';
 import { logPluginError } from '../errors';
+import { sendChannelMessage } from '../messaging';
 
 export async function checkSubscriptions(ctx: Context, cfg: Config) {
   const currentTime = dayjs().format('HH:mm');
@@ -71,17 +72,23 @@ async function checkUserSubscriptions(
     const { dailyMission, stamina } = staminaData;
 
     if (subs.activity) {
-      const { group_id } = subs.activity;
+      const { group_id, platform, self_id } = subs.activity;
       if (dailyMission.activation < dailyMission.maxActivation) {
-        await ctx.bots[0].sendMessage(
-          group_id,
+        await sendChannelMessage(
+          ctx,
+          {
+            channelId: group_id,
+            platform,
+            selfId: self_id,
+          },
           h('at', { id: user_id }) + ' 提醒：您的每日活跃度尚未满格，请上线完成每日任务！'
         );
       }
     }
 
     if (subs.stamina) {
-      const { group_id, duration, reminder_interval, last_reminded_at } = subs.stamina;
+      const { group_id, platform, self_id, duration, reminder_interval, last_reminded_at } =
+        subs.stamina;
       const maxTs = parseInt(stamina.maxTs);
       const now = dayjs().unix();
       const timeUntilFull = maxTs - now;
@@ -96,8 +103,13 @@ async function checkUserSubscriptions(
         const timeSinceLastReminder = now - lastRemindedUnix;
 
         if (timeSinceLastReminder >= reminderIntervalSeconds) {
-          await ctx.bots[0].sendMessage(
-            group_id,
+          await sendChannelMessage(
+            ctx,
+            {
+              channelId: group_id,
+              platform,
+              selfId: self_id,
+            },
             h('at', { id: user_id }) + ' 提醒：您的体力即将恢复满，请及时上线使用！'
           );
 

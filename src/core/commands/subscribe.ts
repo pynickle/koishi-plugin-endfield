@@ -36,6 +36,8 @@ export async function endfieldSubscribe(ctx: Context, session: Session, cfg: Con
       await ctx.database.create('endfield_subscriptions', {
         user_id: session.userId,
         group_id: session.channelId,
+        platform: session.platform,
+        self_id: session.bot?.selfId,
         time,
         created_at: dayjs().toISOString(),
         updated_at: dayjs().toISOString(),
@@ -121,6 +123,8 @@ export async function endfieldStaminaSubscribe(
       await ctx.database.create('endfield_stamina_subscriptions', {
         user_id: session.userId,
         group_id: session.channelId,
+        platform: session.platform,
+        self_id: session.bot?.selfId,
         duration,
         reminder_interval,
         created_at: dayjs().toISOString(),

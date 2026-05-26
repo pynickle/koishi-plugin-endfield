@@ -51,6 +51,8 @@ export function extendDatabase(ctx: Context) {
     {
       user_id: 'string',
       group_id: 'string',
+      platform: 'string',
+      self_id: 'string',
       time: 'string',
       created_at: 'string',
       updated_at: 'string',
@@ -65,6 +67,8 @@ export function extendDatabase(ctx: Context) {
     {
       user_id: 'string',
       group_id: 'string',
+      platform: 'string',
+      self_id: 'string',
       duration: 'string',
       reminder_interval: 'string',
       created_at: 'string',

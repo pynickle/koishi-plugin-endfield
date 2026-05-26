@@ -2,7 +2,8 @@ import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
 import { CharacterApi, createApiClient } from '../api';
-import { logPluginError, logPluginWarn, sendReplyImage } from '../errors';
+import { logPluginError } from '../errors';
+import { sendReplyImage } from '../messaging';
 import { renderOperatorList } from '../render/note';
 
 function extractImageSrc(image: string) {
@@ -12,21 +13,6 @@ function extractImageSrc(image: string) {
 
 export async function endfieldNote(ctx: Context, session: Session, cfg: Config) {
   try {
-    if (session.onebot && session.messageId) {
-      try {
-        await session.onebot._request('set_msg_emoji_like', {
-          message_id: session.messageId,
-          emoji_id: 147,
-        });
-      } catch (error) {
-        logPluginWarn(ctx, 'Failed to set message emoji like. Continuing without interruption.', error, {
-          command: 'endfield.note',
-          messageId: session.messageId,
-          userId: session.userId,
-        });
-      }
-    }
-
     const bindings = await ctx.database.get('endfield_bindings_v3', session.userId);
 
     if (bindings.length === 0) {

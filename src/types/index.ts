@@ -34,6 +34,8 @@ export interface Binding {
 export interface Subscription {
   user_id: string;
   group_id: string;
+  platform?: string;
+  self_id?: string;
   time: string;
   created_at: string;
   updated_at: string;
@@ -42,6 +44,8 @@ export interface Subscription {
 export interface StaminaSubscription {
   user_id: string;
   group_id: string;
+  platform?: string;
+  self_id?: string;
   duration: string;
   reminder_interval: string;
   created_at: string;

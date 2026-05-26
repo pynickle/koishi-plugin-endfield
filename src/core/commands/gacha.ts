@@ -3,7 +3,8 @@ import { Context, Session } from 'koishi';
 import { Config } from '../../config/config';
 import { POLLING_CONFIG, SYNC_STATUS } from '../../constants';
 import { GachaApi, createApiClient, type GachaSyncStatus } from '../api';
-import { logPluginError, sendReplyImage, tryDeleteOnebotMessage } from '../errors';
+import { logPluginError } from '../errors';
+import { sendReplyImage, sendSessionMessage, tryDeleteMessage } from '../messaging';
 import { renderGachaRecord } from '../render/gacha';
 
 async function fetchAllGachaRecords(
@@ -40,7 +41,7 @@ async function syncGachaRecords(
   cfg: Config,
   frameworkToken: string,
   charPools: any[],
-  syncMsgId: string | number
+  syncMsgId?: string | number
 ): Promise<string | void> {
   const api = createApiClient({ apiKey: cfg.apiKey, apiBaseUrl: cfg.apiBaseUrl });
   const gachaApi = new GachaApi(api);
@@ -57,7 +58,7 @@ async function syncGachaRecords(
       if (pollingAttempts > POLLING_CONFIG.GACHA_MAX_ATTEMPTS) {
         clearInterval(pollingInterval);
 
-        await tryDeleteOnebotMessage(ctx, session, syncMsgId, {
+        await tryDeleteMessage(ctx, session, syncMsgId, {
           command: 'endfield.gacha',
           phase: 'sync-timeout',
         });
@@ -73,7 +74,7 @@ async function syncGachaRecords(
 
           ctx.logger.info('Gacha sync completed:', syncStatus.status);
 
-          await tryDeleteOnebotMessage(ctx, session, syncMsgId, {
+          await tryDeleteMessage(ctx, session, syncMsgId, {
             command: 'endfield.gacha',
             phase: 'sync-completed',
           });
@@ -107,7 +108,7 @@ async function syncGachaRecords(
         } else if (syncStatus.status === SYNC_STATUS.FAILED) {
           clearInterval(pollingInterval);
 
-          await tryDeleteOnebotMessage(ctx, session, syncMsgId, {
+          await tryDeleteMessage(ctx, session, syncMsgId, {
             command: 'endfield.gacha',
             phase: 'sync-failed',
           });
@@ -146,16 +147,8 @@ export async function endfieldGacha(
     const charPools = await ctx.database.get('endfield_char_pools_v2', {});
 
     if (!options.noSync) {
-      let syncMsgId: string | number;
       const syncText = session.text('.syncing');
-
-      if (session.onebot) {
-        syncMsgId = await session.onebot.sendGroupMsg(session.channelId, [
-          { type: 'text', data: { text: syncText } },
-        ]);
-      } else {
-        await session.send(syncText);
-      }
+      const syncMsgId = await sendSessionMessage(session, syncText);
 
       return await syncGachaRecords(ctx, session, cfg, frameworkToken, charPools, syncMsgId);
     } else {
@@ -163,27 +156,11 @@ export async function endfieldGacha(
         const allRecordsData = await fetchAllGachaRecords(ctx, cfg, frameworkToken);
 
         if (allRecordsData.records.length === 0) {
-          let noRecordsMsgId: string | number;
           const noRecordsText = session.text('.noRecordsFound');
+          const noRecordsMsgId = await sendSessionMessage(session, noRecordsText);
 
-          if (session.onebot) {
-            noRecordsMsgId = await session.onebot.sendGroupMsg(session.channelId, [
-              { type: 'text', data: { text: noRecordsText } },
-            ]);
-          } else {
-            await session.send(noRecordsText);
-          }
-
-          let syncMsgId: string | number;
           const syncText = session.text('.syncing');
-
-          if (session.onebot) {
-            syncMsgId = await session.onebot.sendGroupMsg(session.channelId, [
-              { type: 'text', data: { text: syncText } },
-            ]);
-          } else {
-            await session.send(syncText);
-          }
+          const syncMsgId = await sendSessionMessage(session, syncText);
 
           const result = await syncGachaRecords(
             ctx,
@@ -194,7 +171,7 @@ export async function endfieldGacha(
             syncMsgId
           );
 
-          await tryDeleteOnebotMessage(ctx, session, noRecordsMsgId, {
+          await tryDeleteMessage(ctx, session, noRecordsMsgId, {
             command: 'endfield.gacha',
             phase: 'no-records-fallback',
           });

@@ -4,7 +4,6 @@ import { Config } from './config/config';
 import { registerCommands } from './core/commands';
 import { extendDatabase } from './core/database';
 
-import '@pynickle/koishi-plugin-adapter-onebot';
 import 'koishi-plugin-cron';
 import { registerCronJobs, initializeServices } from './core/scheduler';
 import zhCN from './locales/zh-CN.json';
@@ -46,6 +45,8 @@ declare module 'koishi' {
     endfield_subscriptions: {
       user_id: string;
       group_id: string;
+      platform?: string;
+      self_id?: string;
       time: string;
       created_at: string;
       updated_at: string;
@@ -53,6 +54,8 @@ declare module 'koishi' {
     endfield_stamina_subscriptions: {
       user_id: string;
       group_id: string;
+      platform?: string;
+      self_id?: string;
       duration: string;
       reminder_interval: string;
       created_at: string;

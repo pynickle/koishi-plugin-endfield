@@ -6,9 +6,15 @@ export interface Config {
   apiKey: string;
   apiBaseUrl: string;
   clientUrl: string;
-  adminQQ: string;
+  adminUserId: string;
+  adminPlatform?: string;
+  adminBotSelfId?: string;
   enableStaminaSubscriptions: boolean;
-  announcementGroups: string[];
+  announcementTargets: Array<{
+    channelId: string;
+    platform?: string;
+    selfId?: string;
+  }>;
   noteAvatarStyle: 'rt' | 'sq';
   enableEndfieldPanelApi: boolean;
   endfieldPanelApiUrl: string;
@@ -18,9 +24,17 @@ export const Config: Schema<Config> = Schema.object({
   apiKey: Schema.string().required(),
   apiBaseUrl: Schema.string().default('https://end-api.shallow.ink/'),
   clientUrl: Schema.string().default('https://end.shallow.ink/'),
-  adminQQ: Schema.string().required(),
+  adminUserId: Schema.string().default(''),
+  adminPlatform: Schema.string().default(''),
+  adminBotSelfId: Schema.string().default(''),
   enableStaminaSubscriptions: Schema.boolean().default(false),
-  announcementGroups: Schema.array(Schema.string()).default([]),
+  announcementTargets: Schema.array(
+    Schema.object({
+      channelId: Schema.string().required(),
+      platform: Schema.string().default(''),
+      selfId: Schema.string().default(''),
+    })
+  ).default([]),
   noteAvatarStyle: Schema.union(['rt', 'sq']).default('rt'),
   enableEndfieldPanelApi: Schema.boolean().default(false),
   endfieldPanelApiUrl: Schema.string().default(''),

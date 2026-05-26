@@ -1,9 +1,10 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { Context, Session } from 'koishi';
+import { Context, h, Session } from 'koishi';
 
 import { Config } from '../../config/config';
-import { logPluginError, tryDeleteOnebotMessage } from '../errors';
+import { logPluginError } from '../errors';
+import { sendSessionMessage, tryDeleteMessage } from '../messaging';
 
 export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
   try {
@@ -33,31 +34,10 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
       expireTime: dayjs(expire).toDate().toLocaleString(),
     });
 
-    let qrMsgId: string | number;
-    if (session.onebot) {
-      qrMsgId = await session.onebot.sendGroupMsg(session.channelId, [
-        {
-          type: 'text',
-          data: {
-            text: `${scanPrompt}\n`,
-          },
-        },
-        {
-          type: 'image',
-          data: {
-            file: qrcode,
-          },
-        },
-        {
-          type: 'text',
-          data: {
-            text: `\n${expirePrompt}`,
-          },
-        },
-      ]);
-    } else {
-      await session.send(`${scanPrompt}\n<img src="${qrcode}"/>\n${expirePrompt}`);
-    }
+    const qrMsgId = await sendSessionMessage(
+      session,
+      `${scanPrompt}\n${h.image(qrcode)}\n${expirePrompt}`
+    );
 
     // Step 3: Poll for scan status
     let finalFrameworkToken = framework_token;
@@ -76,7 +56,7 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
         const statusData = statusResponse.data;
         if (statusData.code !== 0) {
           clearInterval(pollInterval);
-          await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+          await tryDeleteMessage(ctx, session, qrMsgId, {
             command: 'endfield.qr',
             phase: 'status-error',
             target: 'qr',
@@ -109,7 +89,7 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
 
           const confirmData = confirmResponse.data;
           if (confirmData.code !== 0) {
-            await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+            await tryDeleteMessage(ctx, session, qrMsgId, {
               command: 'endfield.qr',
               phase: 'confirm-error',
               target: 'qr',
@@ -126,20 +106,7 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
 
           // Step 5: Get binding info
           const bindingInfoMsg = session.text('commands.endfield.qr.messages.gettingBindingInfo');
-          let bindingInfoMsgId: string | number;
-
-          if (session.onebot) {
-            bindingInfoMsgId = await session.onebot.sendGroupMsg(session.channelId, [
-              {
-                type: 'text',
-                data: {
-                  text: bindingInfoMsg,
-                },
-              },
-            ]);
-          } else {
-            await session.send(bindingInfoMsg);
-          }
+          const bindingInfoMsgId = await sendSessionMessage(session, bindingInfoMsg);
 
           const bindingUrl = new URL('/api/endfield/binding', cfg.apiBaseUrl);
           const bindingResponse = await axios.get(bindingUrl.toString(), {
@@ -151,7 +118,7 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
 
           const bindingData = bindingResponse.data;
           if (bindingData.code !== 0) {
-            await tryDeleteOnebotMessage(ctx, session, bindingInfoMsgId, {
+            await tryDeleteMessage(ctx, session, bindingInfoMsgId, {
               command: 'endfield.qr',
               phase: 'binding-error',
             });
@@ -166,7 +133,7 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
           const bindingList = bindingData.data.bindingList;
 
           if (!bindingList || bindingList.length === 0) {
-            await tryDeleteOnebotMessage(ctx, session, bindingInfoMsgId, {
+            await tryDeleteMessage(ctx, session, bindingInfoMsgId, {
               command: 'endfield.qr',
               phase: 'no-binding-info',
             });
@@ -195,12 +162,12 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
           ]);
 
           // Step 7: Delete messages after login
-          await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+          await tryDeleteMessage(ctx, session, qrMsgId, {
             command: 'endfield.qr',
             phase: 'success-cleanup',
             target: 'qr',
           });
-          await tryDeleteOnebotMessage(ctx, session, bindingInfoMsgId, {
+          await tryDeleteMessage(ctx, session, bindingInfoMsgId, {
             command: 'endfield.qr',
             phase: 'success-cleanup',
             target: 'binding-info',
@@ -214,7 +181,7 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
           );
         } else if (status === 'expired') {
           clearInterval(pollInterval);
-          await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+          await tryDeleteMessage(ctx, session, qrMsgId, {
             command: 'endfield.qr',
             phase: 'expired',
             target: 'qr',
@@ -223,7 +190,7 @@ export async function endfieldQr(ctx: Context, session: Session, cfg: Config) {
         }
       } catch (error) {
         clearInterval(pollInterval);
-        await tryDeleteOnebotMessage(ctx, session, qrMsgId, {
+        await tryDeleteMessage(ctx, session, qrMsgId, {
           command: 'endfield.qr',
           phase: 'polling-exception',
           target: 'qr',

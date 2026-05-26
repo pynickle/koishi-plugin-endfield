@@ -5,6 +5,7 @@ import { Config } from '../../config/config';
 import { DATABASE_IDS } from '../../constants';
 import { AnnouncementApi, createApiClient } from '../api';
 import { logPluginError, logPluginWarn } from '../errors';
+import { sendChannelMessage, type ChannelTarget } from '../messaging';
 import { renderAnnouncement } from '../render/announcement';
 
 export async function checkAnnouncements(ctx: Context, cfg: Config) {
@@ -96,15 +97,17 @@ async function handleNewAnnouncement(ctx: Context, cfg: Config, announcement: an
   try {
     const announcementImage = await renderAnnouncement(ctx, announcement);
 
-    const groups = cfg.announcementGroups;
+    const targets: ChannelTarget[] = cfg.announcementTargets;
 
-    for (const groupId of groups) {
+    for (const target of targets) {
       try {
-        await ctx.bots[0].sendMessage(groupId, announcementImage);
+        await sendChannelMessage(ctx, target, announcementImage);
       } catch (error) {
-        logPluginError(ctx, 'Failed to send announcement to group', error, {
+        logPluginError(ctx, 'Failed to send announcement to channel', error, {
           announcementId: announcement.item_id,
-          groupId,
+          channelId: target.channelId,
+          platform: target.platform,
+          selfId: target.selfId,
         });
       }
     }

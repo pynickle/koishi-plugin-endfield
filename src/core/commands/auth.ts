@@ -3,9 +3,9 @@ import { Context, Session } from 'koishi';
 
 import { Config } from '../../config/config';
 import { AUTH_CONFIG, POLLING_CONFIG, AUTH_STATUS } from '../../constants';
-import { createTextMsg } from '../../utils/cqcode-utils';
 import { AuthApi, createApiClient } from '../api';
-import { logPluginError, tryDeleteOnebotMessage } from '../errors';
+import { logPluginError } from '../errors';
+import { sendSessionMessage, tryDeleteMessage } from '../messaging';
 
 export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) {
   try {
@@ -27,14 +27,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
       expiresAt: dayjs(expires_at).format('YYYY-MM-DD HH:mm:ss'),
     });
 
-    let authUrlMsgId: string | number;
-    if (session.onebot) {
-      authUrlMsgId = await session.onebot.sendGroupMsg(session.channelId, [
-        createTextMsg(authText),
-      ]);
-    } else {
-      await session.send(authText);
-    }
+    const authUrlMsgId = await sendSessionMessage(session, authText);
 
     let pollingInterval: string | number | NodeJS.Timeout;
     let pollingAttempts = 0;
@@ -45,7 +38,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
 
         if (pollingAttempts > POLLING_CONFIG.AUTH_MAX_ATTEMPTS) {
           clearInterval(pollingInterval);
-          await tryDeleteOnebotMessage(ctx, session, authUrlMsgId, {
+          await tryDeleteMessage(ctx, session, authUrlMsgId, {
             command: 'endfield.auth',
             phase: 'timeout',
           });
@@ -72,7 +65,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
                 },
               ]);
 
-              await tryDeleteOnebotMessage(ctx, session, authUrlMsgId, {
+              await tryDeleteMessage(ctx, session, authUrlMsgId, {
                 command: 'endfield.auth',
                 phase: 'approved',
                 requestId: request_id,
@@ -93,7 +86,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
             }
           } else if (status === AUTH_STATUS.REJECTED) {
             clearInterval(pollingInterval);
-            await tryDeleteOnebotMessage(ctx, session, authUrlMsgId, {
+            await tryDeleteMessage(ctx, session, authUrlMsgId, {
               command: 'endfield.auth',
               phase: 'rejected',
               requestId: request_id,
@@ -101,7 +94,7 @@ export async function endfieldAuth(ctx: Context, session: Session, cfg: Config) 
             resolve(session.text('.authRejectedError'));
           } else if (status === AUTH_STATUS.EXPIRED) {
             clearInterval(pollingInterval);
-            await tryDeleteOnebotMessage(ctx, session, authUrlMsgId, {
+            await tryDeleteMessage(ctx, session, authUrlMsgId, {
               command: 'endfield.auth',
               phase: 'expired',
               requestId: request_id,

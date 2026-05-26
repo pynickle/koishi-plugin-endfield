@@ -1,6 +1,6 @@
 import { inspect } from 'node:util';
 
-import { Context, Session } from 'koishi';
+import { Context } from 'koishi';
 
 export class EndfieldError extends Error {
   constructor(
@@ -68,7 +68,10 @@ function getErrorDetails(error: unknown): Array<[string, string]> {
     return [['value', stringifyValue(error)]];
   }
 
-  const details: Array<[string, string]> = [['name', error.name], ['message', error.message]];
+  const details: Array<[string, string]> = [
+    ['name', error.name],
+    ['message', error.message],
+  ];
   const errorWithExtras = error as Error & {
     code?: unknown;
     cause?: unknown;
@@ -157,69 +160,11 @@ export function logPluginWarn(
   ctx.logger.warn(formatErrorReport(scope, error, metadata));
 }
 
-export async function tryDeleteOnebotMessage(
+export function handleError(
   ctx: Context,
-  session: Session,
-  messageId?: string | number,
-  metadata?: ErrorMetadata
-) {
-  if (!session.onebot || messageId === undefined) return false;
-
-  try {
-    await session.onebot.deleteMsg(messageId);
-    return true;
-  } catch (error) {
-    logPluginWarn(ctx, 'Failed to delete OneBot message. Continuing without interruption.', error, {
-      channelId: session.channelId,
-      guildId: session.guildId,
-      messageId,
-      userId: session.userId,
-      ...metadata,
-    });
-    return false;
-  }
-}
-
-export async function sendReplyImage(
-  ctx: Context,
-  session: Session,
-  image: string,
-  extractImageSrc: (image: string) => string = () => '',
-  metadata?: ErrorMetadata
-) {
-  const extractedImageSrc = extractImageSrc(image);
-  const htmlImageMatch = image.match(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/i);
-  const imageSrc = extractedImageSrc || htmlImageMatch?.[1] || image;
-
-  if (!session.onebot || !session.messageId || !imageSrc) {
-    return false;
-  }
-
-  const reply = { type: 'reply', data: { id: session.messageId } };
-  const imageMsg = { type: 'image', data: { file: imageSrc } };
-  const targetChannelId = session.channelId || session.guildId;
-
-  try {
-    if (targetChannelId) {
-      await session.onebot.sendGroupMsg(targetChannelId, [reply, imageMsg]);
-      return true;
-    }
-
-    await session.onebot.sendPrivateMsg(session.userId, [reply, imageMsg]);
-    return true;
-  } catch (error) {
-    logPluginWarn(ctx, 'Failed to send reply image. Falling back to the default send flow.', error, {
-      channelId: session.channelId,
-      guildId: session.guildId,
-      messageId: session.messageId,
-      userId: session.userId,
-      ...metadata,
-    });
-    return false;
-  }
-}
-
-export function handleError(ctx: Context, error: unknown, scope: string = 'Unhandled Endfield error'): string {
+  error: unknown,
+  scope: string = 'Unhandled Endfield error'
+): string {
   if (error instanceof EndfieldError) {
     logPluginError(ctx, `${scope} [${error.code}]`, error, {
       endfieldMessage: error.message,

@@ -42,7 +42,10 @@ npm install koishi-plugin-endfield
 | `apiKey`     | string | Endfield API 的 API Key |
 | `apiBaseUrl` | string | Endfield API 的基础 URL   |
 | `clientUrl`  | string | Endfield API 的客户端 URL  |
-| `adminQQ`    | string | 管理员 QQ 号，用于接收自动签到通知    |
+| `adminUserId` | string | 管理员用户 ID，用于接收自动签到通知 |
+| `adminPlatform` | string | 管理员通知目标平台，可选 |
+| `adminBotSelfId` | string | 管理员通知使用的机器人 ID，可选 |
+| `announcementTargets` | array | 公告提醒频道列表，支持指定平台和机器人 |
 
 ## 使用方法
 
@@ -168,7 +171,7 @@ endfield.setweaponup <poolId> <weaponName>
 
 - **时间**：每日 00:01
 - **功能**：为所有绑定的用户自动签到
-- **通知**：向管理员 QQ 发送签到统计信息
+- **通知**：向配置的管理员用户发送签到统计信息
 
 ### 角色池更新
 
@@ -208,7 +211,7 @@ AGPL 3.0 License
 
 ## 致谢
 
-- [Koishi](https://koishi.chat/)：强大的 QQ 机器人框架
+- [Koishi](https://koishi.chat/)：强大的跨平台机器人框架
 - [Endfield API](https://end.shallow.ink/)：提供终末地相关 API
 
 ## 更新日志

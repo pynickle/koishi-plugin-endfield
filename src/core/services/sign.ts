@@ -4,6 +4,7 @@ import { Config } from '../../config/config';
 import type { SignResult, AutoSignStats } from '../../types';
 import { SignApi, createApiClient } from '../api';
 import { logPluginError } from '../errors';
+import { sendPrivateMessage } from '../messaging';
 
 export async function signUser(ctx: Context, userId: string, cfg: Config): Promise<SignResult> {
   try {
@@ -58,16 +59,23 @@ export async function autoSignAll(ctx: Context, cfg: Config): Promise<void> {
   const stats = await signAllUsers(ctx, cfg);
   const message = formatSignStatsMessage(stats, 'Endfield 自动签到统计');
 
-  if (!ctx.bots[0]) {
-    ctx.logger.warn('No bot instance available to send auto sign stats.');
+  if (!cfg.adminUserId) {
+    ctx.logger.warn('No admin user ID configured to send auto sign stats.');
     return;
   }
 
   try {
-    await ctx.bots[0].sendPrivateMessage(cfg.adminQQ, message);
+    await sendPrivateMessage(
+      ctx,
+      { platform: cfg.adminPlatform, selfId: cfg.adminBotSelfId },
+      cfg.adminUserId,
+      message
+    );
   } catch (error) {
     logPluginError(ctx, 'Failed to send auto sign stats to admin', error, {
-      adminQQ: cfg.adminQQ,
+      adminUserId: cfg.adminUserId,
+      platform: cfg.adminPlatform,
+      selfId: cfg.adminBotSelfId,
     });
   }
 }

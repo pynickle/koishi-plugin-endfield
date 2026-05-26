@@ -8,7 +8,6 @@ await build({
   platform: 'node',
   external: [
     'koishi',
-    '@pynickle/koishi-plugin-adapter-onebot',
     'axios',
     'colorthief',
     'dayjs',
